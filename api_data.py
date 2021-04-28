@@ -6,21 +6,24 @@ from requests.auth import HTTPBasicAuth
 
 def save_data(response_json, filepath):
     
-    with open(filepath, "w") as json_file:
-        json_file.write(
-            json.dumps(response_json, indent=1, ensure_ascii=False)
-        )
+    if len(response_json["hits"]["hits"]):
+
+        with open(filepath, "w") as json_file:
+            json_file.write(
+                json.dumps(response_json, indent=1, ensure_ascii=False)
+            )
 
 if __name__ == "__main__":
 
     username = "imunizacao_public"
     password = "qlto5t&7r_@+#Tlstigi"
+    uf_name = "AL"
 
     json_request = {
         "size": 10000,
         "query": {
             "match": {
-                "estabelecimento_uf": "AL",
+                "estabelecimento_uf": uf_name,
             }
         }
     }
@@ -33,7 +36,7 @@ if __name__ == "__main__":
     
     response_json = response.json()
 
-    save_data(response_json, filepath="data/AL/al-0.json")
+    save_data(response_json, filepath=f"dataset/source_data/{uf_name}/{uf_name}-0.json")
     
     json_request = {}
 
@@ -43,7 +46,7 @@ if __name__ == "__main__":
     page_count = 0
     fetched_count = 10000
 
-    print(f"Fetched {fetched_count} registers - batch 0")
+    print(f"Downloading data for UF-{uf_name} ... batch {page_count} ... fetched {fetched_count} results")
 
     while response_json["hits"]["hits"]:
         
@@ -56,9 +59,13 @@ if __name__ == "__main__":
         )
         
         response_json = response.json()
-        save_data(response_json, filepath=f"data/AL/al-{page_count}.json")
+        
+        save_data(response_json, filepath=f"dataset/source_data/{uf_name}/{uf_name}-{page_count}.json")
 
         fetched_count += len(response_json["hits"]["hits"])
 
-        print(f"Fetched {fetched_count} registers - batch {page_count}")
+        print(f"Downloading data for UF-{uf_name} ... batch {page_count} ... fetched {fetched_count} results")
+        
         json_request["scroll_id"] = response_json["_scroll_id"]
+    
+    print(f"Done. Fetched {fetched_count} results in total.")
