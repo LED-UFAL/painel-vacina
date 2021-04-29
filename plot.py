@@ -11,17 +11,43 @@ import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
 import augusto
+from dash.dependencies import Input, Output
 
-
-
-df = pd.read_csv('Dados AL.csv', sep=';', low_memory=False)
-df['vacina_data_processada'] = df['vacina_dataAplicacao'].apply(lambda x : x.split('T')[0])
-df['vacina_data_processada'] = df['vacina_data_processada'].apply(lambda x : datetime.strptime(x, '%Y-%m-%d').date())
-df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+all_options = {
+       #'TODOS': ['TODOS'],
+       'AL': ['TODOS', 'MACEIO', 'SAO JOSE DA TAPERA', 'MATRIZ DE CAMARAGIBE', 'ATALAIA',
+       'DELMIRO GOUVEIA', 'ARAPIRACA', 'MARECHAL DEODORO', 'CORURIPE',
+       'IGACI', 'PIACABUCU', 'VICOSA', 'SANTANA DO MUNDAU', 'ROTEIRO',
+       'MARIBONDO', 'SAO JOSE DA LAJE', 'PARIPUEIRA', 'FEIRA GRANDE',
+       'CAPELA', 'GIRAU DO PONCIANO', 'RIO LARGO', 'MURICI',
+       'PORTO CALVO', 'PENEDO', 'SAO LUIS DO QUITUNDE', 'TEOTONIO VILELA',
+       'AGUA BRANCA', 'PASSO DE CAMARAGIBE', 'PORTO DE PEDRAS',
+       'PORTO REAL DO COLEGIO', 'MATA GRANDE', 'PARICONHA', 'CAJUEIRO',
+       'SAO SEBASTIAO', 'MARAVILHA', 'TAQUARANA', 'BELEM', 'TRAIPU',
+       'PALMEIRA DOS INDIOS', 'COITE DO NOIA', 'JACARE DOS HOMENS',
+       'PIRANHAS', 'BARRA DE SAO MIGUEL', 'LAGOA DA CANOA',
+       'SAO MIGUEL DOS CAMPOS', 'BATALHA', 'LIMOEIRO DE ANADIA', 'CANAPI',
+       'CAMPO ALEGRE', 'SANTANA DO IPANEMA', 'JUNQUEIRO',
+       'SAO MIGUEL DOS MILAGRES', 'SATUBA', 'SAO BRAS',
+       'UNIAO DOS PALMARES', 'DOIS RIACHOS', 'FLEXEIRAS', 'IBATEGUARA',
+       'OLIVENCA', 'SANTA LUZIA DO NORTE', 'PAO DE ACUCAR',
+       'JOAQUIM GOMES', 'INHAPI', 'ANADIA', 'COLONIA LEOPOLDINA',
+       'SENADOR RUI PALMEIRA', 'PILAR', 'POCO DAS TRINCHEIRAS',
+       'MAR VERMELHO', 'CHA PRETA', 'BARRA DE SANTO ANTONIO',
+       'MAJOR ISIDORO', 'CRAIBAS', 'BOCA DA MATA', 'BRANQUINHA',
+       "OLHO D'AGUA DAS FLORES", 'ESTRELA DE ALAGOAS', 'JARAMATAIA',
+       'FELIZ DESERTO', 'CARNEIROS', 'MINADOR DO NEGRAO', 'QUEBRANGULO',
+       'MONTEIROPOLIS', 'MARAGOGI', 'MESSIAS', 'JAPARATINGA',
+       'JEQUIA DA PRAIA', 'CAMPESTRE', 'NOVO LINO', 'PALESTINA',
+       'OURO BRANCO', 'IGREJA NOVA', 'CAMPO GRANDE', "OLHO D'AGUA GRANDE",
+       'COQUEIRO SECO', 'JACUIPE', 'CACIMBINHAS', 'BELO MONTE',
+       "OLHO D'AGUA DO CASADO", "TANQUE D'ARCA", 'JUNDIA',
+       'PAULO JACINTO', 'PINDOBA'],}
 
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),
@@ -35,10 +61,8 @@ app.layout = html.Div(children=[
             html.H3('Estado'),
             dcc.Dropdown(
 		        id='estado-dropdown',
-		        options=[
-		            {'label': 'TODOS', 'value': 'TODOS'},
-		        ],
-		        value='TODOS'
+		        options=[{'label': k, 'value': k} for k in all_options.keys()],
+		        value='AL'
 		    )
         ], className="one columns"),
 
@@ -46,30 +70,35 @@ app.layout = html.Div(children=[
             html.H3('Município'),
             dcc.Dropdown(
 		        id='municipio-dropdown',
-		        options=[
-		            {'label': 'TODOS', 'value': 'TODOS'},
-		        ],
-		        value='TODOS'
 		    )
-        ], className="one columns"),
+        ], className="two columns"),
     ], className="row"),
 
-    html.Div([
-            html.H3('Doses aplicadas por dia'),
-            dcc.Graph(
-		        id='doses-graph',
-		        figure=augusto.gerar_doses_por_dia(df)
-		    )
-    ]),
-
-    html.Div([
-            html.H3('Abandono vacinal por dia'),
-            dcc.Graph(
-		        id='Abandono-graph',
-		        figure=augusto.gerar_abandono_vacinal(df)
-		    )
-    ]),
+    html.Div(id='mostrar-doses-aplicadas'),
 ])
+
+@app.callback(
+    Output('municipio-dropdown', 'options'),
+    Input('estado-dropdown', 'value'))
+def set_opcoes_municipios(estado_selecionado):
+    return [{'label': i, 'value': i} for i in all_options[estado_selecionado]]
+
+@app.callback(
+    Output('municipio-dropdown', 'value'),
+    Input('municipio-dropdown', 'options'))
+def set_valor_municipio(opcoes_disponiveis):
+    return opcoes_disponiveis[0]['value']
+
+@app.callback(
+    Output('mostrar-doses-aplicadas', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [html.H3('Doses aplicadas por dia'),
+            dcc.Graph(
+                id='doses-graph',
+                figure=augusto.plotar_doses_por_dia(estado_selecionado, municipio_selecionada)
+            )]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
