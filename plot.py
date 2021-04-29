@@ -12,6 +12,8 @@ from tqdm import tqdm
 from datetime import datetime
 import augusto
 from dash.dependencies import Input, Output
+import locale
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -97,7 +99,9 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     return [html.H3('Doses aplicadas por dia'),
             dcc.Graph(
                 id='doses-graph',
-                figure=augusto.plotar_doses_por_dia(estado_selecionado, municipio_selecionada)
+                figure=augusto.plotar_doses_por_dia(
+                    estado_selecionado, municipio_selecionada
+                )
             )]
 
 if __name__ == '__main__':
