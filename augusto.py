@@ -17,6 +17,13 @@ def plotar_doses_por_dia(uf='TODOS', municipio='TODOS', grafico='DOSES POR DIA')
 	)
 	return fig
 
+def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
+	folder='datasets/{}/demanda/'.format(uf)
+	name = 'DEMANDA - {} - {}'.format(uf, municipio)
+	plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
+	fig = px.bar(plotdf, x="index", y='count', title=name)
+	return fig
+
 
 if __name__ == '__main__':
 	pass

@@ -20,36 +20,42 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+mun_list = [
+    'MACEIO', 'SAO JOSE DA TAPERA', 'MATRIZ DE CAMARAGIBE', 'ATALAIA',
+    'DELMIRO GOUVEIA', 'ARAPIRACA', 'MARECHAL DEODORO', 'CORURIPE',
+    'IGACI', 'PIACABUCU', 'VICOSA', 'SANTANA DO MUNDAU', 'ROTEIRO',
+    'MARIBONDO', 'SAO JOSE DA LAJE', 'PARIPUEIRA', 'FEIRA GRANDE',
+    'CAPELA', 'GIRAU DO PONCIANO', 'RIO LARGO', 'MURICI',
+    'PORTO CALVO', 'PENEDO', 'SAO LUIS DO QUITUNDE', 'TEOTONIO VILELA',
+    'AGUA BRANCA', 'PASSO DE CAMARAGIBE', 'PORTO DE PEDRAS',
+    'PORTO REAL DO COLEGIO', 'MATA GRANDE', 'PARICONHA', 'CAJUEIRO',
+    'SAO SEBASTIAO', 'MARAVILHA', 'TAQUARANA', 'BELEM', 'TRAIPU',
+    'PALMEIRA DOS INDIOS', 'COITE DO NOIA', 'JACARE DOS HOMENS',
+    'PIRANHAS', 'BARRA DE SAO MIGUEL', 'LAGOA DA CANOA',
+    'SAO MIGUEL DOS CAMPOS', 'BATALHA', 'LIMOEIRO DE ANADIA', 'CANAPI',
+    'CAMPO ALEGRE', 'SANTANA DO IPANEMA', 'JUNQUEIRO',
+    'SAO MIGUEL DOS MILAGRES', 'SATUBA', 'SAO BRAS',
+    'UNIAO DOS PALMARES', 'DOIS RIACHOS', 'FLEXEIRAS', 'IBATEGUARA',
+    'OLIVENCA', 'SANTA LUZIA DO NORTE', 'PAO DE ACUCAR',
+    'JOAQUIM GOMES', 'INHAPI', 'ANADIA', 'COLONIA LEOPOLDINA',
+    'SENADOR RUI PALMEIRA', 'PILAR', 'POCO DAS TRINCHEIRAS',
+    'MAR VERMELHO', 'CHA PRETA', 'BARRA DE SANTO ANTONIO',
+    'MAJOR ISIDORO', 'CRAIBAS', 'BOCA DA MATA', 'BRANQUINHA',
+    "OLHO D'AGUA DAS FLORES", 'ESTRELA DE ALAGOAS', 'JARAMATAIA',
+    'FELIZ DESERTO', 'CARNEIROS', 'MINADOR DO NEGRAO', 'QUEBRANGULO',
+    'MONTEIROPOLIS', 'MARAGOGI', 'MESSIAS', 'JAPARATINGA',
+    'JEQUIA DA PRAIA', 'CAMPESTRE', 'NOVO LINO', 'PALESTINA',
+    'OURO BRANCO', 'IGREJA NOVA', 'CAMPO GRANDE', "OLHO D'AGUA GRANDE",
+    'COQUEIRO SECO', 'JACUIPE', 'CACIMBINHAS', 'BELO MONTE',
+    "OLHO D'AGUA DO CASADO", "TANQUE D'ARCA", 'JUNDIA',
+    'PAULO JACINTO', 'PINDOBA'
+]
+
+mun_list.sort()
+
 all_options = {
        #'TODOS': ['TODOS'],
-       'AL': ['TODOS', 'MACEIO', 'SAO JOSE DA TAPERA', 'MATRIZ DE CAMARAGIBE', 'ATALAIA',
-       'DELMIRO GOUVEIA', 'ARAPIRACA', 'MARECHAL DEODORO', 'CORURIPE',
-       'IGACI', 'PIACABUCU', 'VICOSA', 'SANTANA DO MUNDAU', 'ROTEIRO',
-       'MARIBONDO', 'SAO JOSE DA LAJE', 'PARIPUEIRA', 'FEIRA GRANDE',
-       'CAPELA', 'GIRAU DO PONCIANO', 'RIO LARGO', 'MURICI',
-       'PORTO CALVO', 'PENEDO', 'SAO LUIS DO QUITUNDE', 'TEOTONIO VILELA',
-       'AGUA BRANCA', 'PASSO DE CAMARAGIBE', 'PORTO DE PEDRAS',
-       'PORTO REAL DO COLEGIO', 'MATA GRANDE', 'PARICONHA', 'CAJUEIRO',
-       'SAO SEBASTIAO', 'MARAVILHA', 'TAQUARANA', 'BELEM', 'TRAIPU',
-       'PALMEIRA DOS INDIOS', 'COITE DO NOIA', 'JACARE DOS HOMENS',
-       'PIRANHAS', 'BARRA DE SAO MIGUEL', 'LAGOA DA CANOA',
-       'SAO MIGUEL DOS CAMPOS', 'BATALHA', 'LIMOEIRO DE ANADIA', 'CANAPI',
-       'CAMPO ALEGRE', 'SANTANA DO IPANEMA', 'JUNQUEIRO',
-       'SAO MIGUEL DOS MILAGRES', 'SATUBA', 'SAO BRAS',
-       'UNIAO DOS PALMARES', 'DOIS RIACHOS', 'FLEXEIRAS', 'IBATEGUARA',
-       'OLIVENCA', 'SANTA LUZIA DO NORTE', 'PAO DE ACUCAR',
-       'JOAQUIM GOMES', 'INHAPI', 'ANADIA', 'COLONIA LEOPOLDINA',
-       'SENADOR RUI PALMEIRA', 'PILAR', 'POCO DAS TRINCHEIRAS',
-       'MAR VERMELHO', 'CHA PRETA', 'BARRA DE SANTO ANTONIO',
-       'MAJOR ISIDORO', 'CRAIBAS', 'BOCA DA MATA', 'BRANQUINHA',
-       "OLHO D'AGUA DAS FLORES", 'ESTRELA DE ALAGOAS', 'JARAMATAIA',
-       'FELIZ DESERTO', 'CARNEIROS', 'MINADOR DO NEGRAO', 'QUEBRANGULO',
-       'MONTEIROPOLIS', 'MARAGOGI', 'MESSIAS', 'JAPARATINGA',
-       'JEQUIA DA PRAIA', 'CAMPESTRE', 'NOVO LINO', 'PALESTINA',
-       'OURO BRANCO', 'IGREJA NOVA', 'CAMPO GRANDE', "OLHO D'AGUA GRANDE",
-       'COQUEIRO SECO', 'JACUIPE', 'CACIMBINHAS', 'BELO MONTE',
-       "OLHO D'AGUA DO CASADO", "TANQUE D'ARCA", 'JUNDIA',
-       'PAULO JACINTO', 'PINDOBA'],}
+       'AL': ['TODOS',]+mun_list}
 
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),
@@ -77,6 +83,7 @@ app.layout = html.Div(children=[
     ], className="row"),
 
     html.Div(id='mostrar-doses-aplicadas'),
+    html.Div(id='mostrar-demanda'),
 ])
 
 @app.callback(
@@ -103,6 +110,19 @@ def set_display_children(estado_selecionado, municipio_selecionada):
                     estado_selecionado, municipio_selecionada
                 )
             )]
+
+@app.callback(
+    Output('mostrar-demanda', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Demanda por dia'),
+            dcc.Graph(
+                id='demanda-graph',
+                figure=augusto.plotar_demanda_por_dia(estado_selecionado, municipio_selecionada)
+            )
+    ]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
