@@ -108,6 +108,7 @@ def set_valor_municipio(opcoes_disponiveis):
     Input('municipio-dropdown', 'value'))
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [html.H3('Doses aplicadas por dia'),
+            html.H5('Neste gráfico informamos o número total de doses aplicadas nos últimos dias. As cores representam os diferentes tipos de doses.'),
             dcc.Graph(
                 id='doses-graph',
                 figure=augusto.plotar_doses_por_dia(
@@ -122,6 +123,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Demanda por dia'),
+        html.H5('DEMANDA DE APLICAÇÃO POR DIA'),
             dcc.Graph(
                 id='demanda-graph',
                 figure=augusto.plotar_demanda_por_dia(estado_selecionado, municipio_selecionada)
@@ -135,6 +137,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Atraso vacinacao'),
+        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose e que estavam com o calendário de vacinação  atrasado em cada dia.'),
             dcc.Graph(
                 id='delay-graph',
                 figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "pos")
@@ -148,6 +151,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Adiantamento vacinacao'),
+        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia recomendado pelo fabricante da vacina  em cada dia.'),
             dcc.Graph(
                 id='sooner-graph',
                 figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "neg")
