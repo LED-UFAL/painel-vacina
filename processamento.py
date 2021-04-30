@@ -1,4 +1,5 @@
-import pandas as pd 
+import pandas as pd
+import os
 
 from tratamento import GeraDados
 
@@ -20,12 +21,23 @@ def processa_demanda(df):
     """
     df = df[fields]
     for uf in df['estabelecimento_uf'].unique():
+        if not os.path.exists(os.path.join('datasets', uf)):
+            os.mkdir(os.path.join('datasets', uf))
+
+        if not os.path.exists(os.path.join('datasets', uf, 'demanda')):
+            os.mkdir(os.path.join('datasets', uf, 'demanda'))
+
+        if not os.path.exists(os.path.join('datasets', uf, 'doses_por_dia')):
+            os.mkdir(os.path.join('datasets', uf, 'doses_por_dia'))
+
         df_estado = df.loc[df['estabelecimento_uf']==uf].reset_index(drop=True)
         GeraDados(df_estado).gera_demanda().to_csv('datasets/{}/demanda/TODOS.csv'.format(uf), sep=';', index=False)
+        GeraDados(df_estado).gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/TODOS.csv'.format(uf), sep=';', index=False)
         for cidade in df["estabelecimento_municipio_nome"].unique():
             df_municipio = df.loc[df['estabelecimento_municipio_nome']==cidade].reset_index(drop=True)
             data = GeraDados(df_municipio)
             data.gera_demanda().to_csv('datasets/{}/demanda/{}.csv'.format(uf, cidade), sep=';', index=False)
+            data.gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/{}.csv'.format(uf, cidade), sep=';', index=False)
 
 if __name__ == '__main__':
     df = pd.read_csv('AL.csv', sep=';')
