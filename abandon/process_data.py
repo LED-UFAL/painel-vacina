@@ -139,10 +139,11 @@ def main(uf, municipio, dataframe, dest_vis_dir, plot_figures=False, overwrite=F
 
     # Filtra a tabela pelo município passado
 
-    if not municipio in dataframe.estabelecimento_municipio_nome.unique():
+    if not municipio in dataframe.estabelecimento_municipio_nome.unique() and municipio != "TODOS":
         raise ValueError(f"Municipio {municipio} não encontrado na tabela!")
 
-    dataframe = dataframe[dataframe.estabelecimento_municipio_nome == municipio]
+    if municipio != "TODOS":
+        dataframe = dataframe[dataframe.estabelecimento_municipio_nome == municipio]
 
     # Criando o intervalo de visualização dos dados (data da primeira aplicação até hoje):
 
