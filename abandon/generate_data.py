@@ -23,8 +23,8 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.join('datasets', uf)):
             os.mkdir(os.path.join('datasets', uf))
 
-        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal"')):
-            os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal"'))
+        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal')):
+            os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal'))
 
         dest_vis_dir = f"datasets/{uf}/abandono-atraso-vacinal"
 
