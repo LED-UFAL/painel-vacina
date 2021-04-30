@@ -18,6 +18,10 @@ def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
 	name = 'DEMANDA - {} - {}'.format(uf, municipio)
 	plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
 	fig = px.bar(plotdf, x="index", y='count', title=name)
+
+	fig.update_layout(
+        xaxis=dict(title="Data"), yaxis=dict(title="Quantidade")
+    )
 	return fig
 
 

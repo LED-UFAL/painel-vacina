@@ -12,6 +12,7 @@ from tqdm import tqdm
 from datetime import datetime
 import augusto
 from dash.dependencies import Input, Output
+from abandon import plot as abandon_plot
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -82,6 +83,9 @@ app.layout = html.Div(children=[
 
     html.Div(id='mostrar-doses-aplicadas'),
     html.Div(id='mostrar-demanda'),
+    html.Div(id='mostrar-atraso'),
+    html.Div(id='mostrar-adiantamento'),
+    html.Div(id='mostrar-abandono')
 ])
 
 @app.callback(
@@ -117,6 +121,45 @@ def set_display_children(estado_selecionado, municipio_selecionada):
             dcc.Graph(
                 id='demanda-graph',
                 figure=augusto.plotar_demanda_por_dia(estado_selecionado, municipio_selecionada)
+            )
+    ]
+
+@app.callback(
+    Output('mostrar-atraso', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Atraso vacinacao'),
+            dcc.Graph(
+                id='delay-graph',
+                figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "pos")
+            )
+    ]
+
+@app.callback(
+    Output('mostrar-adiantamento', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Adiantamento vacinacao'),
+            dcc.Graph(
+                id='sooner-graph',
+                figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "neg")
+            )
+    ]
+
+@app.callback(
+    Output('mostrar-abandono', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Taxa abandono vacinacao'),
+            dcc.Graph(
+                id='abandon-graph',
+                figure=abandon_plot.plot_abandon(estado_selecionado, municipio_selecionada)
             )
     ]
 
