@@ -16,7 +16,8 @@ FIELD_LIST = [
     "vacina_dataAplicacao",
     "vacina_descricao_dose",
     "vacina_nome",
-    "estabelecimento_municipio_nome"
+    "estabelecimento_municipio_nome",
+    "estabelecimento_uf"
 ]
 
 DATE_COLUMN = {
