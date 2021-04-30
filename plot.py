@@ -85,6 +85,7 @@ app.layout = html.Div(children=[
 
     html.Div(id='mostrar-doses-aplicadas'),
     html.Div(id='mostrar-demanda'),
+    html.Div(id='mostrar-demanda-vacina'),
     html.Div(id='mostrar-atraso'),
     html.Div(id='mostrar-adiantamento'),
     html.Div(id='mostrar-abandono')
@@ -123,10 +124,24 @@ def set_display_children(estado_selecionado, municipio_selecionada):
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Demanda por dia'),
-        html.H5('DEMANDA DE APLICAÇÃO POR DIA'),
+        html.H5('Neste gráfico informamos o número total de doses necessárias nos próximos dias para cumprir os prazos de vacinação, independente do tipo de vacina.'),
             dcc.Graph(
                 id='demanda-graph',
                 figure=augusto.plotar_demanda_por_dia(estado_selecionado, municipio_selecionada)
+            )
+    ]
+
+@app.callback(
+    Output('mostrar-demanda-vacina', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Demanda por vacina'),
+        html.H5('Neste gráfico informamos o número total de doses necessárias nos próximos dias para cumprir os prazos de vacinação, pelo tipo de vacina.'),
+            dcc.Graph(
+                id='demanda-vacina-graph',
+                figure=augusto.plotar_demanda_por_vacina(estado_selecionado, municipio_selecionada)
             )
     ]
 
@@ -136,7 +151,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     Input('municipio-dropdown', 'value'))
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
-        html.H3('Atraso vacinacao'),
+        html.H3('Atraso de vacinacão'),
         html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose e que estavam com o calendário de vacinação  atrasado em cada dia.'),
             dcc.Graph(
                 id='delay-graph',
@@ -150,7 +165,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     Input('municipio-dropdown', 'value'))
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
-        html.H3('Adiantamento vacinacao'),
+        html.H3('Adiantamento de vacinacão'),
         html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia recomendado pelo fabricante da vacina  em cada dia.'),
             dcc.Graph(
                 id='sooner-graph',
@@ -164,7 +179,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     Input('municipio-dropdown', 'value'))
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
-        html.H3('Taxa abandono vacinacao'),
+        html.H3('Taxa de abandono de vacinacão'),
             dcc.Graph(
                 id='abandon-graph',
                 figure=abandon_plot.plot_abandon(estado_selecionado, municipio_selecionada)
