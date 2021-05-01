@@ -20,6 +20,7 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 mun_list = [
     'MACEIO', 'SAO JOSE DA TAPERA', 'MATRIZ DE CAMARAGIBE', 'ATALAIA',
