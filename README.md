@@ -14,7 +14,7 @@ Baixe ou clone o repositório. Na pasta do painel-vacina:
     
 # Executando o painel
 
-Na pasta do paine-vacina: 
+Na pasta do painel-vacina: 
 
     $ python plot.py
     Dash is running on http://127.0.0.1:8050/
