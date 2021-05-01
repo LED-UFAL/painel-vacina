@@ -82,7 +82,6 @@ class Tratamento():
 class GeraDados():
     def __init__(self, df):
         self.df_primeira_dose = Tratamento(df=df).gera_df_primeira_dose_apenas()
-        self.df_segunda_dose = Tratamento(df=df).gera_df_duas_doses()
         self.df_doses_por_dia = Tratamento(df=df).gerar_doses_por_dia()
 
     def gera_demanda(self, **kwargs):
@@ -118,99 +117,6 @@ class GeraDados():
             idx = pd.date_range(df.index.min(), df.index.max())
             df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
 
-        return df
-
-    def gera_abandono(self, **kwargs):
-        """
-        Objeto para gerar dataframe contínuo de pessoas que tomaram apenas a primeira dose
-
-        Parâmetros:
-            tipo_vacina (opcional): especificar tipo da vacina entre 'astrazeneca' ou 'coronavac', se não for especificado irá gerar o abandono total 
-        """
-        df = self.df_primeira_dose
-        if 'tipo_vacina' in kwargs:
-            tipo_vacina = kwargs.get('tipo_vacina')
-            if tipo_vacina == 'astrazeneca' or tipo_vacina == 'covishield':
-                df = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
-                df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
-                df = df.loc[(df['dataSegundaDose']<pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-            else:
-                df = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
-                df = df.loc[(df['dataSegundaDose']<pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-        
-        else:
-            df_astrazeneca = df.loc[df['vacina_nome']!='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-            df_astrazeneca['dataSegundaDose'] = df_astrazeneca['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
-            df_coronavac = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-            df_coronavac['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
-            df = pd.concat([df_coronavac, df_astrazeneca]).reset_index(drop=True)
-            df = df.loc[df['dataSegundaDose']<pd.Timestamp('today')].groupby(['dataSegundaDose']).size()
-            idx = pd.date_range(df.index.min(), df.index.max())
-            df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-
-        return df
-
-    def gera_imunizados(self, **kwargs):
-        """
-        Objeto para gerar dataframe de pessoas que tomaram as duas doses dentro do prazo
-
-        Parâmetros:
-            tipo_vacina (opcional): especificar tipo da vacina entre 'astrazeneca' ou 'coronavac', se não for especificado irá gerar o total de imunzados 
-        """
-        df = self.df_segunda_dose
-        df = df.loc[df['atrasados']==False].reset_index(drop=True)
-
-        if 'tipo_vacina' in kwargs:
-            tipo_vacina = kwargs.get('tipo_vacina')
-            if tipo_vacina == 'astrazeneca' or tipo_vacina == 'covishield':
-                df = df.loc[df['vacina_nome']!='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df = df.groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-            else:
-                df = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df = df.groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)       
-        else:
-            df = df.groupby(['dataSegundaDose']).size()
-            idx = pd.date_range(df.index.min(), df.index.max())
-            df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-        
-        return df
-
-    def gera_atrasos(self, **kwargs):
-        """
-        Objeto para gerar dataframe das pessoas que tomaram a segunda dose atrasada
-
-        Parâmetros:
-            tipo_vacina (opcional): especificar tipo da vacina entre 'astrazeneca' ou 'coronavac', se não for especificado irá gerar o total de imunzados 
-        """
-        df = self.df_segunda_dose
-        
-        df = df.loc[df['atrasados']==True].reset_index(drop=True)
-        if 'tipo_vacina' in kwargs:
-            tipo_vacina = kwargs.get('tipo_vacina')
-            if tipo_vacina == 'astrazeneca' or tipo_vacina == 'covishield':
-                df = df.loc[df['vacina_nome']!='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df = df.groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-            else:
-                df = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df = df.groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)       
-        else:
-            df = df.groupby(['dataSegundaDose']).size()
-            idx = pd.date_range(df.index.min(), df.index.max())
-            df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-        
         return df
 
     def gerar_doses_por_dia(self):
