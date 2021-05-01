@@ -2,6 +2,8 @@
 
 Análise e visualização dos dados da vacinação.
 
+Uma iniciativa do [Laboratório de Estatística e Ciência de Dados - LED](https://im.ufal.br/laboratorio/led/).
+
 # Instalação e execução do painel
 
 Baixe ou clone o repositório. Na pasta do painel-vacina:
