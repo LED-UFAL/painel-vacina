@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import pandas as pd
-from tqdm import tqdm
 
 def prazo(row):
     if row['vacina_nome']== 'Covid-19-Coronavac-Sinovac/Butantan':
@@ -24,7 +23,6 @@ class Tratamento():
         """
         df = self.df
         df = df.loc[df.duplicated(subset=['paciente_id'], keep=False)==False].reset_index(drop=True)
-        df = df.loc[df['vacina_descricao_dose']=='\xa0\xa0\xa0\xa01ª\xa0Dose'].reset_index(drop=True)
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
         df = df.sort_values(by=['vacina_dataAplicacao'], ascending=True).reset_index(drop=True)
         return df
@@ -63,21 +61,8 @@ class Tratamento():
         df = self.df
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
-        dados = {
-        'Data': [],
-        'Quantidade': [],
-        'Dose Aplicada': []
-        }
-
-        for date in tqdm(df['vacina_dataAplicacao'].unique()):
-            for dose in df['vacina_descricao_dose'].unique():
-                dados['Data'].append(date)
-                dados['Dose Aplicada'].append(dose)
-                loc = (df['vacina_dataAplicacao'] == date) & (df['vacina_descricao_dose'] == dose)
-                dados['Quantidade'].append(len(df.loc[loc]))
-
-        plotdf = pd.DataFrame(data=dados)
-        return plotdf
+        df = df.groupby(by=['vacina_descricao_dose', 'vacina_dataAplicacao']).size().to_frame(name='Quantidade').reset_index(drop=False).rename(columns={'vacina_dataAplicacao': 'Data', 'vacina_descricao_dose': 'Dose Aplicada'})
+        return df
 
 class GeraDados():
     def __init__(self, df):
@@ -108,14 +93,17 @@ class GeraDados():
                 df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
         
         else:
-            df_astrazeneca = df.loc[df['vacina_nome']!='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
+            df_astrazeneca = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
             df_astrazeneca['dataSegundaDose'] = df_astrazeneca['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
             df_coronavac = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
             df_coronavac['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
             df = pd.concat([df_coronavac, df_astrazeneca]).reset_index(drop=True)
             df = df.loc[df['dataSegundaDose']>=pd.Timestamp('today')].groupby(['dataSegundaDose']).size()
-            idx = pd.date_range(df.index.min(), df.index.max())
-            df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+            if df.shape[0]!=0:
+                idx = pd.date_range(df.index.min(), df.index.max())
+                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+            else:
+                df = pd.DataFrame(columns=['index', 'count'])
 
         return df
 
