@@ -100,6 +100,9 @@ class Tratamento():
         df.loc[(df['vacina_dataAplicacao']>=datetime(2020, 12, 31).date()) & (df['vacina_dataAplicacao']<=datetime.today().date())].reset_index(drop=True)
         df = df.loc[(df['vacina_descricao_dose']=='1ªDose') | (df['vacina_descricao_dose']=='2ªDose')].reset_index(drop=True)
         self.df = df
+
+    def gera_df_tratado(self):
+        return self.df
         
     def gera_df_primeira_dose_apenas(self):
         """
@@ -108,11 +111,6 @@ class Tratamento():
         df = self.df
         df = df.loc[df.duplicated(subset=['paciente_id'], keep=False)==False].reset_index(drop=True)
         df = df.sort_values(by=['vacina_dataAplicacao'], ascending=True).reset_index(drop=True)
-        return df
-
-    def gerar_doses_por_dia(self):
-        df = self.df[['vacina_dataAplicacao', 'vacina_descricao_dose']]
-        df = df.groupby(by=['vacina_descricao_dose', 'vacina_dataAplicacao']).size().to_frame(name='Quantidade').reset_index(drop=False).rename(columns={'vacina_dataAplicacao': 'Data', 'vacina_descricao_dose': 'Dose Aplicada'})
         return df
 
     def process_source_data(self):
@@ -153,7 +151,7 @@ class Tratamento():
 class GeraDados():
     def __init__(self, df):
         self.df_primeira_dose = Tratamento(df=df).gera_df_primeira_dose_apenas()
-        self.df_doses_por_dia = Tratamento(df=df).gerar_doses_por_dia()
+        self.df_tratado = Tratamento(df=df).gera_df_tratado()
         self.process_source_data = Tratamento(df=df).process_source_data()
 
     def gera_demanda(self, **kwargs):
@@ -194,11 +192,23 @@ class GeraDados():
 
         return df
 
-    def gerar_doses_por_dia(self):
+    def gerar_doses_por_dia(self, **kwargs):
         """
         Objeto para gerar quantidade de doses por dia
         """
-        return self.df_doses_por_dia
+        df = self.df_tratado.drop(columns=['paciente_id'])
+        if 'tipo_vacina' in kwargs:
+            tipo_vacina = kwargs.get('tipo_vacina'):
+            if tipo_vacina == 'coronavac':
+                df = df.loc[df['vacina_nome']=="Covid-19-Coronavac-Sinovac/Butantan"].reset_index(drop=True)
+            elif tipo_vacina == 'astrazeneca':
+                condicao = (df['vacina_nome']=="Covid-19-AstraZeneca") | (df['vacina_nome']=="Vacina Covid-19 - Covishield")
+                df = df.loc[condicao].reset_index(drop=True)
+            else:
+                condicao = (df['vacina_nome']!="Covid-19-Coronavac-Sinovac/Butantan") & (df['vacina_nome']!="Covid-19-AstraZeneca") & (df['vacina_nome']!="Vacina Covid-19 - Covishield")
+                df = df.loc[condicao].reset_index(drop=True)
+        df = df.groupby(by=['vacina_descricao_dose', 'vacina_dataAplicacao']).size().to_frame(name='Quantidade').reset_index(drop=False).rename(columns={'vacina_dataAplicacao': 'Data', 'vacina_descricao_dose': 'Dose Aplicada'})
+        return df
 
     def gera_serie_atraso(self):
         data = self.process_source_data

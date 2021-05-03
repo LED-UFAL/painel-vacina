@@ -70,12 +70,14 @@ def processa_demanda(df):
             os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono_atraso_vacinal'))
 
     data_brasil = GeraDados(df)
-    data_brasil.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/BRASIL/demanda/TODOS_coronavac.csv')
-    data_brasil.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/BRASIL/demanda/TODOS_astrazeneca.csv')
-    data_brasil.gera_demanda().to_csv('datasets/BRASIL/demanda/TODOS.csv')
-    data_brasil.gerar_doses_por_dia().to_csv('datasets/BRASIL/doses_por_dia/TODOS.csv')
-    data_brasil.gera_serie_abandono().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-atraso.csv')
-    data_brasil.gera_serie_atraso().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-abandono.csv')
+    data_brasil.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/BRASIL/demanda/TODOS_coronavac.csv', sep=';', index=False)
+    data_brasil.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/BRASIL/demanda/TODOS_astrazeneca.csv', sep=';', index=False)
+    data_brasil.gera_demanda().to_csv('datasets/BRASIL/demanda/TODOS.csv', sep=';', index=False)
+    data_brasil.gerar_doses_por_dia().to_csv('datasets/BRASIL/doses_por_dia/TODOS.csv', sep=';', index=False)
+    data_brasil.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/BRASIL/doses_por_dia/TODOS_coronavac.csv', sep=';', index=False)
+    data_brasil.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/BRASIL/doses_por_dia/TODOS_coronavac.csv', sep=';', index=False)
+    data_brasil.gera_serie_abandono().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-atraso.csv', sep=';', index=False)
+    data_brasil.gera_serie_atraso().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-abandono.csv', sep=';', index=False)
     data_brasil = None
     print('BRASIL - OK')
     for uf in df['estabelecimento_uf'].unique():
@@ -97,6 +99,8 @@ def processa_demanda(df):
         data_estado.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/{}/demanda/TODOS_coronavac.csv'.format(uf), sep=';', index=False)
         data_estado.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/{}/demanda/TODOS_astrazeneca.csv'.format(uf), sep=';', index=False)
         data_estado.gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/TODOS.csv'.format(uf), sep=';', index=False)
+        data_estado.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/{}/doses_por_dia/TODOS_coronavac.csv'.format(uf), sep=';', index=False)
+        data_estado.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/{}/doses_por_dia/TODOS_astrazeneca.csv'.format(uf), sep=';', index=False)
         data_estado.gera_serie_abandono().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-atraso.csv'.format(uf), sep=';')
         data_estado.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-abandono.csv'.format(uf), sep=';')
         data_estado = None
@@ -110,6 +114,8 @@ def processa_demanda(df):
             data.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/{}/demanda/{}_astrazeneca.csv'.format(uf, cidade), sep=';', index=False)
             data.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/{}/demanda/{}_coronavac.csv'.format(uf, cidade), sep=';', index=False)
             data.gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/{}.csv'.format(uf, cidade), sep=';', index=False)
+            data.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/{}/doses_por_dia/{}_coronavac.csv'.format(uf, cidade), sep=';', index=False)
+            data.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/{}/doses_por_dia/{}_astrazeneca.csv'.format(uf, cidade), sep=';', index=False)
             data.gera_serie_abandono().to_csv('datasets/{}/abandono-atraso-vacinal/{}/serie-atraso.csv'.format(uf, cidade), sep=';')
             data.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/{}/serie-abandono.csv'.format(uf, cidade), sep=';')
         print(uf+' - OK')
