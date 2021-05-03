@@ -19,8 +19,8 @@ def compute_delay(row):
     return row["vacina_dose_2"] - (row["vacina_dose_1"] + timedelta(days=row["vacina_janela"]))
 
 def abandon_rate(data, date, vaccine_name):
-    data = data.loc[data['vacina_nome']==vaccine_name].reset_index(drop=True)
-    data = data.loc[data['vacina_dose_1'] < date - timedelta(days=DOSE_OFFSET[vaccine_name])]
+    data = data[data.vacina_nome==vaccine_name].reset_index(drop=True)
+    data = data[data.vacina_dose_1 < date - timedelta(days=DOSE_OFFSET[vaccine_name])]
     first_dose_count = data.shape[0]
     if not first_dose_count:
         return None
@@ -32,7 +32,7 @@ def abandon_series(vaccine_name, date_interval, data):
     begin_date = date_interval[0] + timedelta(days=DOSE_OFFSET[vaccine_name])
     abandon_date_interval = pd.date_range(
         begin_date, datetime.today().date(), freq='d'
-    ).date()
+    ).date
     ab_df = pd.DataFrame(
         index=abandon_date_interval,
         data=[
@@ -97,6 +97,7 @@ class Tratamento():
         df = df.drop_duplicates(subset=['paciente_id', 'vacina_dataAplicacao', 'vacina_descricao_dose'], keep='first').reset_index(drop=True)
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
+        df.loc[(df['vacina_dataAplicacao']>=datetime(2020, 12, 31).date()) & (df['vacina_dataAplicacao']<=datetime.today().date())].reset_index(drop=True)
         df = df.loc[(df['vacina_descricao_dose']=='1ªDose') | (df['vacina_descricao_dose']=='2ªDose')].reset_index(drop=True)
         self.df = df
         
