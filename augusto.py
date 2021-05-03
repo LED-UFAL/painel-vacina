@@ -5,10 +5,12 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import os
 
+CURRENT_DIR = os.getcwd()
+
 
 def plotar_doses_por_dia(uf='TODOS', municipio='TODOS', grafico='DOSES POR DIA'):
 	## NUMERO TOTAL DE DOSES APLICADA POR DIA <ESTADO>, <CIDADE> (se tiver)
-	folder='datasets/{}/doses_por_dia/'.format(uf)
+	folder = CURRENT_DIR + os.path.join(f'/datasets/{uf}', 'doses_por_dia')
 	name = grafico + ' - {} - {}'.format(uf, municipio)
 	plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
 	fig = px.bar(plotdf, x="Data", y='Quantidade', color="Dose Aplicada", barmode="group",
@@ -19,7 +21,7 @@ def plotar_doses_por_dia(uf='TODOS', municipio='TODOS', grafico='DOSES POR DIA')
 	return fig
 
 def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
-	folder='datasets/{}/demanda/'.format(uf)
+	folder = CURRENT_DIR + os.path.join(f'/datasets/{uf}', 'demanda')
 	name = 'DEMANDA - {} - {}'.format(uf, municipio)
 	plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
 	fig = px.bar(plotdf, x="index", y='count', title=name)
@@ -30,7 +32,7 @@ def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
 	return fig
 
 def plotar_demanda_por_vacina(uf='TODOS', municipio='TODOS', grafico='DEMANDA POR VACINA'):
-	folder='datasets/{}/demanda/'.format(uf)
+	folder = CURRENT_DIR + os.path.join(f'/datasets/{uf}', 'demanda')
 	name = grafico+' - {} - {}'.format(uf, municipio)
 	plotdf_astrazeneca = pd.read_csv(os.path.join(folder, municipio)+'_astrazeneca.csv', sep=';')
 	plotdf_coronavac = pd.read_csv(os.path.join(folder, municipio)+'_coronavac.csv', sep=';')
@@ -39,11 +41,30 @@ def plotar_demanda_por_vacina(uf='TODOS', municipio='TODOS', grafico='DEMANDA PO
 		go.Bar(x=plotdf_coronavac['index'], y=plotdf_coronavac['count'], name='Coronavac')
 	]
 	fig = go.Figure(data=data)
-
 	fig.update_layout(
         title=name, xaxis=dict(title="Data"), yaxis=dict(title="Quantidade")
     )
 	return fig
+
+def plot_delay(uf, municipio, signal):
+    path = CURRENT_DIR + os.path.join(f"/datasets/{uf}/abandono-atraso-vacinal", municipio)
+    delay_df = pd.read_csv(os.path.join(path, "serie-atraso.csv"), sep=";", index_col=0)
+    delay_df.index = delay_df.index.to_series().apply(lambda x: datetime.strptime(x, '%Y-%m-%d').date())
+    fig = px.bar(delay_df[[c for c in delay_df.columns if signal + "-" in c]], barmode="group")
+    fig.update_layout(
+        xaxis=dict(title="Data"), yaxis=dict(title="Quantidade"), legend=dict(title="Tipo Vacina")
+    )
+    return fig
+
+def plot_abandon(uf, municipio):
+    path = CURRENT_DIR + '/'+os.path.join(f"/datasets/{uf}/abandono-atraso-vacinal", municipio)
+    ab_df = pd.read_csv(os.path.join(path, "serie-abandono.csv"), sep=";", index_col=0)
+    ab_df.index = ab_df.index.to_series().apply(lambda x: datetime.strptime(x, '%Y-%m-%d').date())
+    fig = px.line(ab_df)
+    fig.update_layout(
+        xaxis=dict(title="Data"), yaxis=dict(title="Taxa de abandono"), legend=dict(title="Tipo Vacina")
+    )
+    return fig
 
 
 if __name__ == '__main__':

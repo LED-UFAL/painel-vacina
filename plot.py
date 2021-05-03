@@ -12,7 +12,6 @@ from tqdm import tqdm
 from datetime import datetime
 import augusto
 from dash.dependencies import Input, Output
-from abandon import plot as abandon_plot
 import locale
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
@@ -156,7 +155,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose e que estavam com o calendário de vacinação  atrasado em cada dia.'),
             dcc.Graph(
                 id='delay-graph',
-                figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "pos")
+                figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "pos")
             )
     ]
 
@@ -170,7 +169,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia recomendado pelo fabricante da vacina  em cada dia.'),
             dcc.Graph(
                 id='sooner-graph',
-                figure=abandon_plot.plot_delay(estado_selecionado, municipio_selecionada, "neg")
+                figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "neg")
             )
     ]
 
@@ -183,7 +182,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         html.H3('Taxa de abandono de vacinacão'),
             dcc.Graph(
                 id='abandon-graph',
-                figure=abandon_plot.plot_abandon(estado_selecionado, municipio_selecionada)
+                figure=augusto.plot_abandon(estado_selecionado, municipio_selecionada)
             )
     ]
 
