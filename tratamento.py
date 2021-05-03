@@ -168,14 +168,20 @@ class GeraDados():
                 df = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
                 df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
                 df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+                if df.shape[0]!=0:
+                    idx = pd.date_range(df.index.min(), df.index.max())
+                    df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+                else:
+                    df = pd.DataFrame(columns=['index', 'count'])
             else:
                 df = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
                 df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
                 df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                idx = pd.date_range(df.index.min(), df.index.max())
-                df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+                if df.shape[0]!=0:
+                    idx = pd.date_range(df.index.min(), df.index.max())
+                    df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+                else:
+                    df = pd.DataFrame(columns=['index', 'count'])
         
         else:
             df_astrazeneca = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
@@ -198,7 +204,7 @@ class GeraDados():
         """
         df = self.df_tratado.drop(columns=['paciente_id'])
         if 'tipo_vacina' in kwargs:
-            tipo_vacina = kwargs.get('tipo_vacina'):
+            tipo_vacina = kwargs.get('tipo_vacina')
             if tipo_vacina == 'coronavac':
                 df = df.loc[df['vacina_nome']=="Covid-19-Coronavac-Sinovac/Butantan"].reset_index(drop=True)
             elif tipo_vacina == 'astrazeneca':
