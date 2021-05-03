@@ -69,7 +69,7 @@ def processa_demanda(df):
     if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal')):
             os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal'))
 
-    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal')):
+    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS')):
             os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
 
     data_brasil = GeraDados(df)
@@ -96,7 +96,7 @@ def processa_demanda(df):
         if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal')):
             os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal'))
 
-        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal')):
+        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', 'TODOS')):
             os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal', 'TODOS'))
 
         df_estado = df.loc[df['estabelecimento_uf']==uf].reset_index(drop=True)
