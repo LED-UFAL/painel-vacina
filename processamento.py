@@ -66,8 +66,11 @@ def processa_demanda(df):
     if not os.path.exists(os.path.join('datasets', 'BRASIL', 'doses_por_dia')):
         os.mkdir(os.path.join('datasets', 'BRASIL', 'doses_por_dia'))
 
-    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono_atraso_vacinal')):
-            os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono_atraso_vacinal'))
+    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal')):
+            os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal'))
+
+    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal')):
+            os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
 
     data_brasil = GeraDados(df)
     data_brasil.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/BRASIL/demanda/TODOS_coronavac.csv', sep=';', index=False)
@@ -90,8 +93,11 @@ def processa_demanda(df):
         if not os.path.exists(os.path.join('datasets', uf, 'doses_por_dia')):
             os.mkdir(os.path.join('datasets', uf, 'doses_por_dia'))
 
-        if not os.path.exists(os.path.join('datasets', uf, 'abandono_atraso_vacinal')):
-            os.mkdir(os.path.join('datasets', uf, 'abandono_atraso_vacinal'))
+        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal')):
+            os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal'))
+
+        if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal')):
+            os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal', 'TODOS'))
 
         df_estado = df.loc[df['estabelecimento_uf']==uf].reset_index(drop=True)
         data_estado = GeraDados(df_estado)
@@ -105,8 +111,8 @@ def processa_demanda(df):
         data_estado.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-abandono.csv'.format(uf), sep=';')
         data_estado = None
         for cidade in tqdm(df["estabelecimento_municipio_nome"].unique()):
-            if not os.path.exists(os.path.join('datasets', uf, 'abandono_atraso_vacinal', cidade)):
-                os.mkdir(os.path.join('datasets', uf, 'abandono_atraso_vacinal', cidade))
+            if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade)):
+                os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade))
 
             df_municipio = df.loc[df['estabelecimento_municipio_nome']==cidade].reset_index(drop=True)
             data = GeraDados(df_municipio)
