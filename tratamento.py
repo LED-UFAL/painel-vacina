@@ -144,7 +144,10 @@ class Tratamento():
         dataframe = dataframe[dataframe.vacina_dose_1 < dataframe.vacina_dose_2].reset_index(drop=True)
 
         # Calculando o atraso (em dias) entre a data prevista de aplicação da 2a dose e a data observada:
-        dataframe['vacina_atraso'] = dataframe.apply(compute_delay, axis=1).dt.days
+        if dataframe.shape[0]!=0:
+            dataframe['vacina_atraso'] = dataframe.apply(compute_delay, axis=1).dt.days
+        else:
+            dataframe['vacina_atraso'] = []
 
         return dataframe
 
@@ -218,9 +221,12 @@ class GeraDados():
 
     def gera_serie_atraso(self):
         data = self.process_source_data
-        date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
-        # Calculando quantidade de pessoas atrasadas (atraso <, > e = 0) por dia:
-        delay_df = delay_series(date_interval=date_interval, data=data)
+        if data.shape[0]!=0:
+            date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
+            # Calculando quantidade de pessoas atrasadas (atraso <, > e = 0) por dia:
+            delay_df = delay_series(date_interval=date_interval, data=data)
+        else:
+            delay_df = pd.DataFrame(columns=[tip+item for tip in ['neg-', 'nul-', 'pos-'] for item in DOSE_OFFSET])
 
         return delay_df
 
@@ -230,13 +236,16 @@ class GeraDados():
         date = datetime.today().date()
         rate_covac = abandon_rate(data=data, date=date, vaccine_name="Covid-19-Coronavac-Sinovac/Butantan")
         rate_astra = abandon_rate(data=data, date=date, vaccine_name="Covid-19-AstraZeneca")
-        date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
-        # Calculando série histórica do abandono vacinal:
-        ab_df_covac = abandon_series(vaccine_name="Covid-19-Coronavac-Sinovac/Butantan", date_interval=date_interval, data=data)
-        ab_df_astra = abandon_series(vaccine_name="Covid-19-AstraZeneca", date_interval=date_interval, data=data)
+        if data.shape[0]!=0:
+            date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
+            # Calculando série histórica do abandono vacinal:
+            ab_df_covac = abandon_series(vaccine_name="Covid-19-Coronavac-Sinovac/Butantan", date_interval=date_interval, data=data)
+            ab_df_astra = abandon_series(vaccine_name="Covid-19-AstraZeneca", date_interval=date_interval, data=data)
+        else:
+            ab_df_covac = pd.DataFrame(columns=["Covid-19-Coronavac-Sinovac/Butantan"])
+            ab_df_astra = pd.DataFrame(columns=["Covid-19-AstraZeneca"])
 
         # Série historica abandono
         ab_df = pd.concat([ab_df_covac, ab_df_astra])
 
         return ab_df
-
