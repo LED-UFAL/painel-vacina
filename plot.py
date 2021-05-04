@@ -20,7 +20,7 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 # Adiciona o script externo
-CURRENT_DIR = os.getcwd()
+CURRENT_DIR = '/'.join(__file__.split('/')[:-1])
 external_scripts = [{'external_url': CURRENT_DIR+'/assets/gtag.js'}]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, external_scripts=external_scripts)
