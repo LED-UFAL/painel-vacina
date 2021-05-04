@@ -1,9 +1,0 @@
-{
- "anomalias": {
-  "Sem data da primeira dose": 10,
-  "Data da primeira dose é maior que data da segunda dose": 1
- },
- "Tomaram a segunda dose antes do dia planejado": 338,
- "Tomaram a segunda dose no dia planejado": 18,
- "Tomaram a segunda dose após o dia planejado": 66
-}
