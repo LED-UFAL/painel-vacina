@@ -21,6 +21,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
+CURRENT_DIR = '/'.join(__file__.split('/')[:-1])
 lista_estados = sorted(os.listdir(CURRENT_DIR+'/datasets'))
 all_options = {
     item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
