@@ -13,6 +13,7 @@ from datetime import datetime
 import augusto
 from dash.dependencies import Input, Output
 import locale
+import os
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
@@ -21,8 +22,8 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-CURRENT_DIR = '/'.join(__file__.split('/')[:-1])
-lista_estados = sorted(os.listdir(CURRENT_DIR+'/datasets'))
+CURRENT_DIR = os.getcwd()
+lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 all_options = {
     item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
 }
