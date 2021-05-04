@@ -33,11 +33,10 @@ app.layout = html.Div(children=[
 
     html.Div(children='''
         Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.
-    '''),
-
+    ''', style=dict(fontSize='25px')),
     html.Div([
         html.Div([
-            html.H3('Estado'),
+            html.H4('Estado'),
             dcc.Dropdown(
 		        id='estado-dropdown',
 		        options=[{'label': k, 'value': k} for k in all_options.keys()],
@@ -46,17 +45,39 @@ app.layout = html.Div(children=[
         ], className="one columns"),
 
         html.Div([
-            html.H3('Município'),
+            html.H4('Município'),
             dcc.Dropdown(
 		        id='municipio-dropdown',
 		    )
         ], className="two columns"),
+    ], className="row", style=dict(display='flex', justifyContent='center')),
+
+    html.H1('Doses aplicadas e atraso vacinal',
+        style=dict(display='flex', justifyContent='center')),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-doses-aplicadas'),
+        ], className="six columns"),
+
+        html.Div([
+            html.Div(id='mostrar-atraso'),
+        ], className="six columns"),
     ], className="row"),
 
-    html.Div(id='mostrar-doses-aplicadas'),
-    html.Div(id='mostrar-demanda'),
-    html.Div(id='mostrar-demanda-vacina'),
-    html.Div(id='mostrar-atraso'),
+    html.H1('Demandas por vacina',
+        style=dict(display='flex', justifyContent='center')),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-demanda'),
+        ], className="six columns"),
+
+        html.Div([
+            html.Div(id='mostrar-demanda-vacina'),
+        ], className="six columns"),
+    ], className="row"),
+
     html.Div(id='mostrar-adiantamento'),
     html.Div(id='mostrar-abandono')
 ])
