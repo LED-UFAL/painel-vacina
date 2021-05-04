@@ -14,6 +14,8 @@ import augusto
 from dash.dependencies import Input, Output
 import locale
 import os
+import time
+
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
@@ -27,13 +29,15 @@ lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 all_options = {
     item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
 }
+MODIFIED_DIR_DATETIME = datetime.fromtimestamp(os.path.getmtime(os.path.join(CURRENT_DIR, 'datasets'))).strftime("%d de %B de %Y, às %H:%M")
 
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),
 
-    html.Div(children='''
-        Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.
-    ''', style=dict(fontSize='25px')),
+    html.Div(children='Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.',
+        style=dict(fontSize='25px')),
+    html.Div(children='Dados coletados em: {}'.format(MODIFIED_DIR_DATETIME),
+        style=dict(fontSize='18px')),
     html.Div([
         html.Div([
             html.H4('Estado'),
