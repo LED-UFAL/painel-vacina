@@ -14,6 +14,7 @@ import augusto
 from dash.dependencies import Input, Output
 import locale
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+import os
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -21,7 +22,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-CURRENT_DIR = '/'.join(__file__.split('/')[:-1])
+CURRENT_DIR = os.getcwd()
 lista_estados = sorted(os.listdir(CURRENT_DIR+'/datasets'))
 all_options = {
     item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
@@ -40,7 +41,7 @@ app.layout = html.Div(children=[
             dcc.Dropdown(
 		        id='estado-dropdown',
 		        options=[{'label': k, 'value': k} for k in all_options.keys()],
-		        value='AL'
+		        value='BRASIL'
 		    )
         ], className="one columns"),
 
@@ -125,33 +126,6 @@ def set_display_children(estado_selecionado, municipio_selecionada):
             dcc.Graph(
                 id='delay-graph',
                 figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "pos")
-            )
-    ]
-
-@app.callback(
-    Output('mostrar-adiantamento', 'children'),
-    Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value'))
-def set_display_children(estado_selecionado, municipio_selecionada):
-    return [
-        html.H3('Adiantamento de vacinacão'),
-        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia recomendado pelo fabricante da vacina  em cada dia.'),
-            dcc.Graph(
-                id='sooner-graph',
-                figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "neg")
-            )
-    ]
-
-@app.callback(
-    Output('mostrar-abandono', 'children'),
-    Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value'))
-def set_display_children(estado_selecionado, municipio_selecionada):
-    return [
-        html.H3('Taxa de abandono de vacinacão'),
-            dcc.Graph(
-                id='abandon-graph',
-                figure=augusto.plot_abandon(estado_selecionado, municipio_selecionada)
             )
     ]
 
