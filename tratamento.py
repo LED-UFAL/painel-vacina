@@ -8,19 +8,14 @@ DATE_COLUMN = {
 }
 
 DOSE_OFFSET = {
-    "Covid-19-AstraZeneca": 84,
-    "Covid-19-Coronavac-Sinovac/Butantan": 28,
-    "Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer": 21
+    "Covid-19-AstraZeneca": (56, 84),
+    "Covid-19-Coronavac-Sinovac/Butantan": (14, 28),
+    "Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer": (21, 25)
 }
-
-def compute_delay(row):
-    if pd.isna(row["vacina_dose_2"]) or pd.isna(row["vacina_dose_1"]):
-        return None
-    return row["vacina_dose_2"] - (row["vacina_dose_1"] + timedelta(days=row["vacina_janela"]))
 
 def abandon_rate(data, date, vaccine_name):
     data = data[data.vacina_nome==vaccine_name].reset_index(drop=True)
-    data = data[data.vacina_dose_1 < date - timedelta(days=DOSE_OFFSET[vaccine_name])]
+    data = data[data.vacina_dose_1 < date - timedelta(days=DOSE_OFFSET[vaccine_name][1])]
     first_dose_count = data.shape[0]
     if not first_dose_count:
         return None
@@ -29,7 +24,7 @@ def abandon_rate(data, date, vaccine_name):
     return 100 * (first_dose_count - second_dose_count) / first_dose_count
 
 def abandon_series(vaccine_name, date_interval, data):
-    begin_date = date_interval[0] + timedelta(days=DOSE_OFFSET[vaccine_name])
+    begin_date = date_interval[0] + timedelta(days=DOSE_OFFSET[vaccine_name][1])
     abandon_date_interval = pd.date_range(
         begin_date, datetime.today().date(), freq='d'
     ).date
@@ -62,14 +57,15 @@ def delay_series(data, date_interval):
     nul_delay, nul_delay_count = delay_df(prefix="nul", date_interval=date_interval)
 
     for d in data.to_dict(orient="records"):
-            
-        scheduled_date = d["vacina_dose_1"] + timedelta(days=d["vacina_janela"])
 
-        if d["vacina_atraso"] > 0:
-            for i in pd.date_range(scheduled_date, d["vacina_dose_2"] - timedelta(days=1), freq='d').date:
+        a_min = d["vacina_dose_1"] + timedelta(days=DOSE_OFFSET[d["vacina_nome"]][0])
+        a_max = d["vacina_dose_1"] + timedelta(days=DOSE_OFFSET[d["vacina_nome"]][1])
+
+        if d["vacina_dose_2"] > a_max:
+            for i in pd.date_range(a_max, d["vacina_dose_2"] - timedelta(days=1), freq='d').date:
                 pos_delay.at[i, "pos-" + d["vacina_nome"]] += 1
                 pos_delay_count += 1
-        elif d["vacina_atraso"] < 0:
+        elif d["vacina_dose_2"] < a_min:
             neg_delay.at[d["vacina_dose_2"], "neg-" + d["vacina_nome"]] += 1
             neg_delay_count += 1
         else:
@@ -119,7 +115,6 @@ class Tratamento():
         dataframe.vacina_nome = dataframe.vacina_nome.apply(lambda x: "Covid-19-AstraZeneca" if x == "Vacina Covid-19 - Covishield" else x)
 
         dataframe = dataframe.drop_duplicates(subset=['paciente_id', 'vacina_dose']).reset_index(drop=True).pivot(index=['paciente_id', 'vacina_nome'], columns='vacina_dose', values='vacina_aplicacao').reset_index(drop=False)
-        dataframe['vacina_janela'] = dataframe['vacina_nome'].apply(lambda x: DOSE_OFFSET[x])
         dataframe = dataframe.rename(columns={'1ªDose': 'vacina_dose_1', '2ªDose': 'vacina_dose_2'})
 
         # ## Importante - tratamento de anomalias
@@ -142,12 +137,6 @@ class Tratamento():
 
         # Removendo registros (data 2a dose anterior ou igual à 1a):
         dataframe = dataframe[dataframe.vacina_dose_1 < dataframe.vacina_dose_2].reset_index(drop=True)
-
-        # Calculando o atraso (em dias) entre a data prevista de aplicação da 2a dose e a data observada:
-        if dataframe.shape[0]!=0:
-            dataframe['vacina_atraso'] = dataframe.apply(compute_delay, axis=1).dt.days
-        else:
-            dataframe['vacina_atraso'] = []
 
         return dataframe
 
