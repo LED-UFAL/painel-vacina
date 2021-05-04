@@ -20,13 +20,13 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 # Adiciona o script externo
-CURRENT_DIR = '/'.join(__file__.split('/')[:-1])
+CURRENT_DIR = os.getcwd()
 external_scripts = [{'external_url': CURRENT_DIR+'/assets/gtag.js'}]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, external_scripts=external_scripts)
 server = app.server
 
-lista_estados = sorted(os.listdir(CURRENT_DIR+'/datasets'))
+lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 all_options = {
     item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
 }
