@@ -149,22 +149,5 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         )
     ]
 
-
-@app.callback(
-    Output('mostrar-abandono', 'children'),
-    Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value')
-)
-def set_display_children(estado_selecionado, municipio_selecionada):
-    return [
-        html.H3('Abandono da vacinacão'),
-        html.H5('Neste gráfico informamos o número total de pessoas que iniciaram o esquema vacinal e não concluíram.'),
-        dcc.Graph(
-            id='abandon-graph',
-            figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Abandono")
-        )
-    ]
-
-
 if __name__ == '__main__':
     app.run_server(debug=True)
