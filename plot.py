@@ -27,7 +27,7 @@ server = app.server
 CURRENT_DIR = os.getcwd()
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 all_options = {
-    item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados
 }
 MODIFIED_DIR_DATETIME = datetime.fromtimestamp(os.path.getmtime(os.path.join(CURRENT_DIR, 'datasets'))).strftime("%d de %B de %Y, às %H:%M")
 
@@ -44,7 +44,7 @@ app.layout = html.Div(children=[
             dcc.Dropdown(
 		        id='estado-dropdown',
 		        options=[{'label': k, 'value': k} for k in all_options.keys()],
-		        value='AL'
+		        value='BRASIL'
 		    )
         ], className="one columns"),
 
