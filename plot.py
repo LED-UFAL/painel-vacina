@@ -82,8 +82,18 @@ app.layout = html.Div(children=[
         ], className="six columns"),
     ], className="row"),
 
-    html.Div(id='mostrar-adiantamento'),
-    html.Div(id='mostrar-abandono')
+    html.H1('Vacinação Precoce e Abandono Vacinal',
+        style=dict(display='flex', justifyContent='center')),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-adiantamento'),
+        ], className="six columns"),
+
+        html.Div([
+            html.Div(id='mostrar-abandono'),
+        ], className="six columns"),
+    ], className="row"),
 ])
 
 @app.callback(
@@ -173,6 +183,24 @@ def set_display_children(estado_selecionado, municipio_selecionada):
             figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Fora do prazo (antecipou)")
         )
     ]
+
+
+@app.callback(
+    Output('mostrar-abandono', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value')
+)
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Abandono da vacinação'),
+        html.H5('Neste gráfico informamos o número total de pessoas que iniciaram o esquema vacinal (tomaram a '
+                'primeira dose) e não concluíram (já deveriam ter tomado a segunda dose).'),
+        dcc.Graph(
+            id='abandon-graph',
+            figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Abandono")
+        )
+    ]
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -67,7 +67,9 @@ def plot_delay(uf, municipio, prefix):
     path = os.path.join(CURRENT_DIR, "datasets", uf, "abandono-atraso-vacinal", municipio)
     delay_df = pd.read_csv(os.path.join(path, "serie-atraso.csv"), sep=";", index_col=0)
     delay_df.index = delay_df.index.to_series().apply(lambda x: datetime.strptime(x, '%Y-%m-%d').date())
-    fig = px.bar(delay_df[[c for c in delay_df.columns if prefix + " - " in c]], barmode="group")
+    delay_df = delay_df[[c for c in delay_df.columns if prefix + " - " in c]]
+    delay_df.columns = [c.replace(prefix + " - ", "") for c in delay_df.columns]
+    fig = px.bar(delay_df, barmode="group")
     fig.update_layout(
         xaxis=dict(title="Data"), yaxis=dict(title="Quantidade"), legend=dict(title="Tipo Vacina")
     )
