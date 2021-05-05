@@ -124,5 +124,5 @@ def processa_demanda(df):
         print(uf+' - OK')
             
 if __name__ == '__main__':
-    df = carrega_base('base.csv)
+    df = carrega_base('base.csv')
     processa_demanda(df)
