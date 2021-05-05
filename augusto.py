@@ -36,9 +36,11 @@ def plotar_demanda_por_vacina(uf='TODOS', municipio='TODOS', grafico='DEMANDA PO
 	name = grafico+' - {} - {}'.format(uf, municipio)
 	plotdf_astrazeneca = pd.read_csv(os.path.join(folder, municipio)+'_astrazeneca.csv', sep=';')
 	plotdf_coronavac = pd.read_csv(os.path.join(folder, municipio)+'_coronavac.csv', sep=';')
+	plotdf_pfizer = pd.read_csv(os.path.join(folder, municipio)+'_pfizer.csv', sep=';')
 	data = [
 		go.Bar(x=plotdf_astrazeneca['index'], y=plotdf_astrazeneca['count'], name='Astrazeneca'),
-		go.Bar(x=plotdf_coronavac['index'], y=plotdf_coronavac['count'], name='Coronavac')
+		go.Bar(x=plotdf_coronavac['index'], y=plotdf_coronavac['count'], name='Coronavac'),
+		go.Bar(x=plotdf_pfizer['index'], y=plotdf_pfizer['count'], name='Pfizer')
 	]
 	fig = go.Figure(data=data)
 	fig.update_layout(

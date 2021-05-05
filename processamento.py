@@ -73,13 +73,12 @@ def processa_demanda(df):
             os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
 
     data_brasil = GeraDados(df)
-    data_brasil.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/BRASIL/demanda/TODOS_coronavac.csv', sep=';', index=False)
-    data_brasil.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/BRASIL/demanda/TODOS_astrazeneca.csv', sep=';', index=False)
     data_brasil.gera_demanda().to_csv('datasets/BRASIL/demanda/TODOS.csv', sep=';', index=False)
     data_brasil.gerar_doses_por_dia().to_csv('datasets/BRASIL/doses_por_dia/TODOS.csv', sep=';', index=False)
-    data_brasil.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/BRASIL/doses_por_dia/TODOS_coronavac.csv', sep=';', index=False)
-    data_brasil.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/BRASIL/doses_por_dia/TODOS_coronavac.csv', sep=';', index=False)
-    data_brasil.gera_serie_atraso().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-atraso.csv', sep=';', index=False)
+    data_brasil.gera_serie_atraso().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-atraso.csv', sep=';')
+    for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
+        data_brasil.gera_demanda(tipo_vacina=vacina).to_csv('datasets/BRASIL/demanda/TODOS_{}.csv'.format(vacina), sep=';', index=False)
+        data_brasil.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/BRASIL/doses_por_dia/TODOS_{}.csv'.format(vacina), sep=';', index=False)    
     data_brasil = None
     print('BRASIL - OK')
     for uf in df['estabelecimento_uf'].unique():
@@ -101,12 +100,11 @@ def processa_demanda(df):
         df_estado = df.loc[df['estabelecimento_uf']==uf].reset_index(drop=True)
         data_estado = GeraDados(df_estado)
         data_estado.gera_demanda().to_csv('datasets/{}/demanda/TODOS.csv'.format(uf), sep=';', index=False)
-        data_estado.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/{}/demanda/TODOS_coronavac.csv'.format(uf), sep=';', index=False)
-        data_estado.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/{}/demanda/TODOS_astrazeneca.csv'.format(uf), sep=';', index=False)
         data_estado.gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/TODOS.csv'.format(uf), sep=';', index=False)
-        data_estado.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/{}/doses_por_dia/TODOS_coronavac.csv'.format(uf), sep=';', index=False)
-        data_estado.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/{}/doses_por_dia/TODOS_astrazeneca.csv'.format(uf), sep=';', index=False)
         data_estado.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-atraso.csv'.format(uf), sep=';')
+        for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
+            data_estado.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/TODOS_{}.csv'.format(uf, vacina), sep=';', index=False)
+            data_estado.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/{}/doses_por_dia/TODOS_{}.csv'.format(uf, vacina), sep=';', index=False)
         data_estado = None
         for cidade in tqdm(df_estado["estabelecimento_municipio_nome"].unique()):
             if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade)):
@@ -115,12 +113,11 @@ def processa_demanda(df):
             df_municipio = df_estado.loc[df_estado['estabelecimento_municipio_nome']==cidade].reset_index(drop=True)
             data = GeraDados(df_municipio)
             data.gera_demanda().to_csv('datasets/{}/demanda/{}.csv'.format(uf, cidade), sep=';', index=False)
-            data.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/{}/demanda/{}_astrazeneca.csv'.format(uf, cidade), sep=';', index=False)
-            data.gera_demanda(tipo_vacina='coronavac').to_csv('datasets/{}/demanda/{}_coronavac.csv'.format(uf, cidade), sep=';', index=False)
             data.gerar_doses_por_dia().to_csv('datasets/{}/doses_por_dia/{}.csv'.format(uf, cidade), sep=';', index=False)
-            data.gerar_doses_por_dia(tipo_vacina='coronavac').to_csv('datasets/{}/doses_por_dia/{}_coronavac.csv'.format(uf, cidade), sep=';', index=False)
-            data.gerar_doses_por_dia(tipo_vacina='astrazeneca').to_csv('datasets/{}/doses_por_dia/{}_astrazeneca.csv'.format(uf, cidade), sep=';', index=False)
             data.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/{}/serie-atraso.csv'.format(uf, cidade), sep=';')
+            for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
+                data.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
+                data.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
         print(uf+' - OK')
             
 if __name__ == '__main__':

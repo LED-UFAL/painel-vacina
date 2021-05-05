@@ -74,19 +74,22 @@ def delay_series(data, date_interval):
 
     return pd.concat([neg_delay, nul_delay, pos_delay, abandon], axis=1)
 
+def generates_demand(df, max_window):
+    """
+    Given a maximum period to take the vaccine, it generates dataframe with the accumulated demand per day.
 
-def prazo(row):
-    if row['vacina_nome']== 'Covid-19-Coronavac-Sinovac/Butantan':
-        if row['diferenca'] > 28:
-            return True
-        else:
-            return False
+    :param df: Pandas DataFrame with only the first dose of a vaccine in their data, containing vacina_dataAplicacao in each row.
+    :param max_window: Maximum period of days to get the vaccine without being considered late.
+    :returns: Pandas DataFrame with time series.
+    """
+    df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=max_window))
+    df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
+    if df.shape[0]!=0:
+        idx = pd.date_range(df.index.min(), df.index.max())
+        df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
     else:
-        if row['diferenca'] > 84:
-            return True
-        else:
-            return False
-
+        df = pd.DataFrame(columns=['index', 'count'])
+    return df
 
 class Tratamento():
     def __init__(self, df):
@@ -94,8 +97,8 @@ class Tratamento():
         df = df.drop_duplicates(subset=['paciente_id', 'vacina_dataAplicacao', 'vacina_descricao_dose'], keep='first').reset_index(drop=True)
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
-        df.loc[(df['vacina_dataAplicacao']>=datetime(2020, 12, 31).date()) & (df['vacina_dataAplicacao']<=datetime.today().date())].reset_index(drop=True)
-        df = df.loc[(df['vacina_descricao_dose']=='1ªDose') | (df['vacina_descricao_dose']=='2ªDose')].reset_index(drop=True)
+        df.loc[(df['vacina_dataAplicacao']>=pd.Timestamp(2020, 12, 31)) & (df['vacina_dataAplicacao']<=pd.Timestamp('today'))].reset_index(drop=True)
+        df = df.loc[df['vacina_descricao_dose'].isin(['1ªDose', '2ªDose'])].reset_index(drop=True)
         self.df = df
 
     def gera_df_tratado(self):
@@ -162,29 +165,23 @@ class GeraDados():
         if 'tipo_vacina' in kwargs:
             tipo_vacina = kwargs.get('tipo_vacina')
             if tipo_vacina == 'astrazeneca' or tipo_vacina == 'covishield':
-                df = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
-                df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
-                df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                if df.shape[0]!=0:
-                    idx = pd.date_range(df.index.min(), df.index.max())
-                    df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-                else:
-                    df = pd.DataFrame(columns=['index', 'count'])
-            else:
+                df = df.loc[df['vacina_nome'].isin(['Covid-19-AstraZeneca', 'Vacina Covid-19 - Covishield'])].reset_index(drop=True)
+                df = generates_demand(df=df, max_window=84)
+                
+            elif tipo_vacina=='coronavac':
                 df = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
-                df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
-                df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
-                if df.shape[0]!=0:
-                    idx = pd.date_range(df.index.min(), df.index.max())
-                    df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-                else:
-                    df = pd.DataFrame(columns=['index', 'count'])
+                df = generates_demand(df=df, max_window=28)
+            else:
+                df = df.loc[df['vacina_nome']=='Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer'].reset_index(drop=True)
+                df = generates_demand(df=df, max_window=25)
         
         else:
-            df_astrazeneca = df.loc[(df['vacina_nome']=='Covid-19-AstraZeneca') | (df['vacina_nome']=='Vacina Covid-19 - Covishield')].reset_index(drop=True)
+            df_astrazeneca = df.loc[df['vacina_nome'].isin(['Covid-19-AstraZeneca', 'Vacina Covid-19 - Covishield'])].reset_index(drop=True)
             df_astrazeneca['dataSegundaDose'] = df_astrazeneca['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=84))
             df_coronavac = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
             df_coronavac['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
+            df_pfizer = df.loc[df['vacina_nome']=='Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer'].reset_index(drop=True)
+            df_pfizer['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=25))
             df = pd.concat([df_coronavac, df_astrazeneca]).reset_index(drop=True)
             df = df.loc[df['dataSegundaDose']>=pd.Timestamp('today')].groupby(['dataSegundaDose']).size()
             if df.shape[0]!=0:
@@ -205,11 +202,9 @@ class GeraDados():
             if tipo_vacina == 'coronavac':
                 df = df.loc[df['vacina_nome']=="Covid-19-Coronavac-Sinovac/Butantan"].reset_index(drop=True)
             elif tipo_vacina == 'astrazeneca':
-                condicao = (df['vacina_nome']=="Covid-19-AstraZeneca") | (df['vacina_nome']=="Vacina Covid-19 - Covishield")
-                df = df.loc[condicao].reset_index(drop=True)
+                df = df.loc[df['vacina_nome'].isin(["Covid-19-AstraZeneca", "Vacina Covid-19 - Covishield"])].reset_index(drop=True)
             else:
-                condicao = (df['vacina_nome']!="Covid-19-Coronavac-Sinovac/Butantan") & (df['vacina_nome']!="Covid-19-AstraZeneca") & (df['vacina_nome']!="Vacina Covid-19 - Covishield")
-                df = df.loc[condicao].reset_index(drop=True)
+                df = df.loc[df['vacina_nome']=='Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer'].reset_index(drop=True)
         df = df.groupby(by=['vacina_descricao_dose', 'vacina_dataAplicacao']).size().to_frame(name='Quantidade').reset_index(drop=False).rename(columns={'vacina_dataAplicacao': 'Data', 'vacina_descricao_dose': 'Dose Aplicada'})
         return df
 
