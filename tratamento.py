@@ -117,6 +117,10 @@ class Tratamento():
         dataframe.vacina_nome = dataframe.vacina_nome.apply(lambda x: VACCINE_NAME[x])
         dataframe = dataframe.drop_duplicates(subset=['paciente_id', 'vacina_dose']).reset_index(drop=True).pivot(index=['paciente_id', 'vacina_nome'], columns='vacina_dose', values='vacina_aplicacao').reset_index(drop=False)
         dataframe = dataframe.rename(columns={'1ªDose': 'vacina_dose_1', '2ªDose': 'vacina_dose_2'})
+        if 'vacina_dose_2' not in dataframe.columns:
+            dataframe['vacina_dose_2'] = dataframe['vacina_dose_1'].apply(lambda x: numpy.nan)
+        if 'vacina_dose_1' not in dataframe.columns:
+            dataframe['vacina_dose_1'] = dataframe['vacina_dose_2'].apply(lambda x: numpy.nan)
 
         # ## Importante - tratamento de anomalias
         # 
