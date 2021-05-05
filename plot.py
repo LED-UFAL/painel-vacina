@@ -13,6 +13,7 @@ from datetime import datetime
 import augusto
 from dash.dependencies import Input, Output
 import locale
+import os
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 
@@ -21,42 +22,11 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-mun_list = [
-    'MACEIO', 'SAO JOSE DA TAPERA', 'MATRIZ DE CAMARAGIBE', 'ATALAIA',
-    'DELMIRO GOUVEIA', 'ARAPIRACA', 'MARECHAL DEODORO', 'CORURIPE',
-    'IGACI', 'PIACABUCU', 'VICOSA', 'SANTANA DO MUNDAU', 'ROTEIRO',
-    'MARIBONDO', 'SAO JOSE DA LAJE', 'PARIPUEIRA', 'FEIRA GRANDE',
-    'CAPELA', 'GIRAU DO PONCIANO', 'RIO LARGO', 'MURICI',
-    'PORTO CALVO', 'PENEDO', 'SAO LUIS DO QUITUNDE', 'TEOTONIO VILELA',
-    'AGUA BRANCA', 'PASSO DE CAMARAGIBE', 'PORTO DE PEDRAS',
-    'PORTO REAL DO COLEGIO', 'MATA GRANDE', 'PARICONHA', 'CAJUEIRO',
-    'SAO SEBASTIAO', 'MARAVILHA', 'TAQUARANA', 'BELEM', 'TRAIPU',
-    'PALMEIRA DOS INDIOS', 'COITE DO NOIA', 'JACARE DOS HOMENS',
-    'PIRANHAS', 'BARRA DE SAO MIGUEL', 'LAGOA DA CANOA',
-    'SAO MIGUEL DOS CAMPOS', 'BATALHA', 'LIMOEIRO DE ANADIA', 'CANAPI',
-    'CAMPO ALEGRE', 'SANTANA DO IPANEMA', 'JUNQUEIRO',
-    'SAO MIGUEL DOS MILAGRES', 'SATUBA', 'SAO BRAS',
-    'UNIAO DOS PALMARES', 'DOIS RIACHOS', 'FLEXEIRAS', 'IBATEGUARA',
-    'OLIVENCA', 'SANTA LUZIA DO NORTE', 'PAO DE ACUCAR',
-    'JOAQUIM GOMES', 'INHAPI', 'ANADIA', 'COLONIA LEOPOLDINA',
-    'SENADOR RUI PALMEIRA', 'PILAR', 'POCO DAS TRINCHEIRAS',
-    'MAR VERMELHO', 'CHA PRETA', 'BARRA DE SANTO ANTONIO',
-    'MAJOR ISIDORO', 'CRAIBAS', 'BOCA DA MATA', 'BRANQUINHA',
-    "OLHO D'AGUA DAS FLORES", 'ESTRELA DE ALAGOAS', 'JARAMATAIA',
-    'FELIZ DESERTO', 'CARNEIROS', 'MINADOR DO NEGRAO', 'QUEBRANGULO',
-    'MONTEIROPOLIS', 'MARAGOGI', 'MESSIAS', 'JAPARATINGA',
-    'JEQUIA DA PRAIA', 'CAMPESTRE', 'NOVO LINO', 'PALESTINA',
-    'OURO BRANCO', 'IGREJA NOVA', 'CAMPO GRANDE', "OLHO D'AGUA GRANDE",
-    'COQUEIRO SECO', 'JACUIPE', 'CACIMBINHAS', 'BELO MONTE',
-    "OLHO D'AGUA DO CASADO", "TANQUE D'ARCA", 'JUNDIA',
-    'PAULO JACINTO', 'PINDOBA'
-]
-
-mun_list.sort()
-
+CURRENT_DIR = os.getcwd()
+lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 all_options = {
-       #'TODOS': ['TODOS'],
-       'AL': ['TODOS',]+mun_list}
+    item: sorted(os.listdir(CURRENT_DIR+'/datasets/{}/abandono-atraso-vacinal'.format(item))) for item in lista_estados
+}
 
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),

@@ -110,11 +110,11 @@ def processa_demanda(df):
         data_estado.gera_serie_abandono().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-abandono.csv'.format(uf), sep=';')
         data_estado.gera_serie_atraso().to_csv('datasets/{}/abandono-atraso-vacinal/TODOS/serie-atraso.csv'.format(uf), sep=';')
         data_estado = None
-        for cidade in tqdm(df["estabelecimento_municipio_nome"].unique()):
+        for cidade in tqdm(df_estado["estabelecimento_municipio_nome"].unique()):
             if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade)):
                 os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade))
 
-            df_municipio = df.loc[df['estabelecimento_municipio_nome']==cidade].reset_index(drop=True)
+            df_municipio = df_estado.loc[df_estado['estabelecimento_municipio_nome']==cidade].reset_index(drop=True)
             data = GeraDados(df_municipio)
             data.gera_demanda().to_csv('datasets/{}/demanda/{}.csv'.format(uf, cidade), sep=';', index=False)
             data.gera_demanda(tipo_vacina='astrazeneca').to_csv('datasets/{}/demanda/{}_astrazeneca.csv'.format(uf, cidade), sep=';', index=False)
