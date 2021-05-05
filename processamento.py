@@ -1,57 +1,71 @@
+import os
+import argparse
+
 import pandas as pd
 import numpy as np
-import os
 from tqdm import tqdm
 
 from tratamento import GeraDados
 
-def carrega_base(file_path):
-    field_list = [
-        'paciente_id',
-        'paciente_idade',
-        'paciente_enumSexoBiologico',
-        'paciente_racaCor_valor',
-        'paciente_endereco_cep',
-        'estabelecimento_municipio_codigo',
-        'estabelecimento_municipio_nome',
-        'estabelecimento_uf',
-        'vacina_grupoAtendimento_nome',
-        'vacina_categoria_nome',
-        'vacina_lote',
-        'vacina_dataAplicacao',
-        'vacina_descricao_dose',
-        'vacina_nome',
-        'sistema_origem',
-        'data_importacao_rnds'
-    ]
 
-    fieldtype_list = {
-        'paciente_id': 'str',
-        'paciente_idade': 'object',
-        'paciente_enumSexoBiologico': 'str',
-        'paciente_racaCor_valor': 'str',
-        'estabelecimento_municipio_codigo': np.uint32,
-        'estabelecimento_municipio_nome': 'str',
-        'estabelecimento_uf': 'str',
-        'vacina_grupoAtendimento_nome': 'str',
-        'vacina_categoria_nome': 'str',
-        'vacina_lote': 'str',
-        'vacina_dataAplicacao': 'str',
-        'vacina_descricao_dose': 'str',
-        'vacina_nome': 'str',
-        'sistema_origem': 'str',
-        'data_importacao_rnds': 'object'
-    }
+FIELD_LIST = [
+    'paciente_id',
+    'paciente_idade',
+    'paciente_enumSexoBiologico',
+    'paciente_racaCor_valor',
+    'paciente_endereco_cep',
+    'estabelecimento_municipio_codigo',
+    'estabelecimento_municipio_nome',
+    'estabelecimento_uf',
+    'vacina_grupoAtendimento_nome',
+    'vacina_categoria_nome',
+    'vacina_lote',
+    'vacina_dataAplicacao',
+    'vacina_descricao_dose',
+    'vacina_nome',
+    'sistema_origem',
+    'data_importacao_rnds'
+]
 
-    dfs = pd.read_csv('base.csv', sep=';', usecols=field_list, dtype=fieldtype_list, chunksize=1000000)
-    l = []
-    for df in dfs:
-        l.append(df)
-    
-    df_base = pd.concat(l)
-    df_base = df_base.dropna()
+FIELD_TYPE_LIST = {
+    'paciente_id': 'str',
+    'paciente_idade': 'object',
+    'paciente_enumSexoBiologico': 'str',
+    'paciente_racaCor_valor': 'str',
+    'estabelecimento_municipio_codigo': np.uint32,
+    'estabelecimento_municipio_nome': 'str',
+    'estabelecimento_uf': 'str',
+    'vacina_grupoAtendimento_nome': 'str',
+    'vacina_categoria_nome': 'str',
+    'vacina_lote': 'str',
+    'vacina_dataAplicacao': 'str',
+    'vacina_descricao_dose': 'str',
+    'vacina_nome': 'str',
+    'sistema_origem': 'str',
+    'data_importacao_rnds': 'object'
+}
 
-    return df_base
+
+def carrega_base(file_path, chunk_size=int(1e6)):
+    """
+    Loads the dataframe in chunks keeping only columns in FIELD_LIST.
+
+    :param file_path: Path to the source csv file.
+    :param chunk_size: Size of each chunk that the dataframe will be split.
+    :returns: Pandas DataFrame with filtered columns.
+    """
+    dataframes = pd.read_csv(
+        file_path, sep=';', usecols=FIELD_LIST, dtype=FIELD_TYPE_LIST, chunksize=chunk_size
+    )
+    dataframe = pd.DataFrame(columns=FIELD_LIST)
+
+    for chunk_df in dataframes:
+        dataframe = pd.concat([dataframe, chunk_df], ignore_index=True)
+
+    dataframe = dataframe.dropna()
+
+    return dataframe
+
 
 def processa_demanda(df):
     """
@@ -67,10 +81,10 @@ def processa_demanda(df):
         os.mkdir(os.path.join('datasets', 'BRASIL', 'doses_por_dia'))
 
     if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal')):
-            os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal'))
+        os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal'))
 
     if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS')):
-            os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
+        os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
 
     data_brasil = GeraDados(df)
     data_brasil.gera_demanda().to_csv('datasets/BRASIL/demanda/TODOS.csv', sep=';', index=False)
@@ -119,7 +133,15 @@ def processa_demanda(df):
                 data.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
                 data.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/{}/doses_por_dia/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
         print(uf+' - OK')
-            
+
+
 if __name__ == '__main__':
-    df = carrega_base('base.csv')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--csv_path", default="base.csv")
+
+    args = parser.parse_args()
+
+    df = carrega_base(file_path=args.csv_path)
+
     processa_demanda(df)
