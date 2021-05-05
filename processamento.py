@@ -43,7 +43,7 @@ def carrega_base(file_path):
         'data_importacao_rnds': 'object'
     }
 
-    dfs = pd.read_csv('base.csv, sep=';', usecols=field_list, dtype=fieldtype_list, chunksize=1000000)
+    dfs = pd.read_csv('base.csv', sep=';', usecols=field_list, dtype=fieldtype_list, chunksize=1000000)
     l = []
     for df in dfs:
         l.append(df)
