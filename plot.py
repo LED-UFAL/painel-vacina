@@ -145,46 +145,56 @@ def set_display_children(estado_selecionado, municipio_selecionada):
             )
     ]
 
+
 @app.callback(
     Output('mostrar-atraso', 'children'),
     Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value'))
+    Input('municipio-dropdown', 'value')
+)
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Atraso de vacinacão'),
-        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose e que estavam com o calendário de vacinação  atrasado em cada dia.'),
-            dcc.Graph(
-                id='delay-graph',
-                figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "pos")
-            )
+        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose e que estavam com o '
+                'calendário de vacinação  atrasado em cada dia.'),
+        dcc.Graph(
+            id='delay-graph',
+            figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Fora do prazo (atrasou)")
+        )
     ]
+
 
 @app.callback(
     Output('mostrar-adiantamento', 'children'),
     Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value'))
+    Input('municipio-dropdown', 'value')
+)
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
         html.H3('Adiantamento de vacinacão'),
-        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia recomendado pelo fabricante da vacina  em cada dia.'),
-            dcc.Graph(
-                id='sooner-graph',
-                figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "neg")
-            )
+        html.H5('Neste gráfico informamos o número total de pessoas que receberam a segunda dose antes do dia '
+                'recomendado pelo fabricante da vacina  em cada dia.'),
+        dcc.Graph(
+            id='sooner-graph',
+            figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Fora do prazo (antecipou)")
+        )
     ]
+
 
 @app.callback(
     Output('mostrar-abandono', 'children'),
     Input('estado-dropdown', 'value'),
-    Input('municipio-dropdown', 'value'))
+    Input('municipio-dropdown', 'value')
+)
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
-        html.H3('Taxa de abandono de vacinacão'),
-            dcc.Graph(
-                id='abandon-graph',
-                figure=augusto.plot_abandon(estado_selecionado, municipio_selecionada)
-            )
+        html.H3('Abandono da vacinacão'),
+        html.H5('Neste gráfico informamos o número total de pessoas que iniciaram o esquema vacinal e não concluíram.'),
+        dcc.Graph(
+            id='abandon-graph',
+            figure=augusto.plot_delay(estado_selecionado, municipio_selecionada, "Abandono")
+        )
     ]
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
