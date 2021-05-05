@@ -7,72 +7,72 @@ DATE_COLUMN = {
     '2ªDose': "vacina_dose_2",
 }
 
-DOSE_OFFSET = {
-    "Covid-19-AstraZeneca": (56, 84),
-    "Covid-19-Coronavac-Sinovac/Butantan": (14, 28),
-    "Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer": (21, 25)
+VACCINE_NAME = {
+    "Covid-19-AstraZeneca": "AstraZeneca",
+    "Covid-19-Coronavac-Sinovac/Butantan": "CoronaVac",
+    "Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer": "Pfizer"
 }
 
-def abandon_rate(data, date, vaccine_name):
-    data = data[data.vacina_nome==vaccine_name].reset_index(drop=True)
-    data = data[data.vacina_dose_1 < date - timedelta(days=DOSE_OFFSET[vaccine_name][1])]
-    first_dose_count = data.shape[0]
-    if not first_dose_count:
-        return None
-    second_dose_count = data.dropna(subset=["vacina_dose_2"]).loc[data.dropna(subset=["vacina_dose_2"])['vacina_dose_2'] <= date].shape[0]
-    
-    return 100 * (first_dose_count - second_dose_count) / first_dose_count
-
-def abandon_series(vaccine_name, date_interval, data):
-    begin_date = date_interval[0] + timedelta(days=DOSE_OFFSET[vaccine_name][1])
-    abandon_date_interval = pd.date_range(
-        begin_date, datetime.today().date(), freq='d'
-    ).date
-    ab_df = pd.DataFrame(
-        index=abandon_date_interval,
-        data=[
-            abandon_rate(
-                data=data, date=d, vaccine_name=vaccine_name
-            ) for d in abandon_date_interval
-        ], columns=[vaccine_name]
-    )
-
-    return ab_df.dropna(subset=[vaccine_name])
+DOSE_OFFSET = {
+    "AstraZeneca": (56, 84),
+    "CoronaVac": (14, 28),
+    "Pfizer": (21, 25)
+}
 
 
-def delay_df(prefix, date_interval):
-    delay_df = pd.DataFrame(
+def empty_df(prefix, date_interval):
+    """"
+    Creates a zero-entry dataframe indexed by date_interval (datetime.date numpy-array). Columns
+    are named with a prefix and represents the time series of values for each type of vaccine.
+
+    :param prefix: String representing the value type that will be stored.
+    :param date_interval: Range of the time series to be created. Must be a Numpy array of datetime.date objects.
+    :returns: Pandas DataFrame with columns' name prefixed by prefix and all entries equal to zero.
+    """
+    zero_df = pd.DataFrame(
         data=numpy.zeros(
             shape=(
                 date_interval.shape[0], len(DOSE_OFFSET.keys())
             )
-        ), columns=["-".join([prefix, name]) for name in list(DOSE_OFFSET.keys())], index=date_interval
+        ), columns=[" - ".join([prefix, name]) for name in list(DOSE_OFFSET.keys())], index=date_interval
     )
-    return delay_df, 0
+    return zero_df
 
 
 def delay_series(data, date_interval):
-    pos_delay, pos_delay_count = delay_df(prefix="pos", date_interval=date_interval)
-    neg_delay, neg_delay_count = delay_df(prefix="neg", date_interval=date_interval)
-    nul_delay, nul_delay_count = delay_df(prefix="nul", date_interval=date_interval)
+    """
+    Generates delay series by iterating over data and computing, for each day in date_interval, the distribution
+    of people who received the 2nd shot among four desired categories (value type).
 
-    for d in data.to_dict(orient="records"):
+    :param data: Pandas DataFrame containing vacina_dose_1, vacina_dose_2 and vacina_nome in each row.
+    :param date_interval: Range of the time series to be created. Must be a Numpy array of datetime.date objects.
+    :returns: Pandas Dataframe with time series for each vaccine type and value type.
+    """
+    pos_delay = empty_df(prefix="Fora do prazo (atrasou)", date_interval=date_interval)
+    neg_delay = empty_df(prefix="Fora do prazo (antecipou)", date_interval=date_interval)
+    nul_delay = empty_df(prefix="Dentro do prazo", date_interval=date_interval)
+    abandon = empty_df(prefix="Abandono", date_interval=date_interval)
+
+    for i, d in data.iterrows():
 
         a_min = d["vacina_dose_1"] + timedelta(days=DOSE_OFFSET[d["vacina_nome"]][0])
         a_max = d["vacina_dose_1"] + timedelta(days=DOSE_OFFSET[d["vacina_nome"]][1])
 
-        if d["vacina_dose_2"] > a_max:
-            for i in pd.date_range(a_max, d["vacina_dose_2"] - timedelta(days=1), freq='d').date:
-                pos_delay.at[i, "pos-" + d["vacina_nome"]] += 1
-                pos_delay_count += 1
-        elif d["vacina_dose_2"] < a_min:
-            neg_delay.at[d["vacina_dose_2"], "neg-" + d["vacina_nome"]] += 1
-            neg_delay_count += 1
-        else:
-            nul_delay.at[d["vacina_dose_2"], "nul-" + d["vacina_nome"]] += 1
-            nul_delay_count += 1
+        if not pd.isna(d["vacina_dose_2"]):
 
-    return pd.concat([neg_delay, nul_delay, pos_delay])
+            if d["vacina_dose_2"] > a_max:
+                for day in pd.date_range(a_max, d["vacina_dose_2"] - timedelta(days=1), freq='d').date:
+                    pos_delay.at[day, "Fora do prazo (atrasou) - " + d["vacina_nome"]] += 1
+            elif d["vacina_dose_2"] < a_min:
+                neg_delay.at[d["vacina_dose_2"], "Fora do prazo (antecipou) - " + d["vacina_nome"]] += 1
+            else:
+                nul_delay.at[d["vacina_dose_2"], "Dentro do prazo - " + d["vacina_nome"]] += 1
+        else:
+            if datetime.today().date() > a_max:
+                for day in pd.date_range(a_max, datetime.today().date(), freq='d').date:
+                    abandon.at[day, "Abandono - " + d["vacina_nome"]] += 1
+
+    return pd.concat([neg_delay, nul_delay, pos_delay, abandon], axis=1)
 
 
 def prazo(row):
@@ -86,6 +86,7 @@ def prazo(row):
             return True
         else:
             return False
+
 
 class Tratamento():
     def __init__(self, df):
@@ -113,7 +114,7 @@ class Tratamento():
         dataframe = self.df
         dataframe = dataframe.rename(columns={'vacina_dataAplicacao': 'vacina_aplicacao', 'vacina_descricao_dose': 'vacina_dose'})
         dataframe.vacina_nome = dataframe.vacina_nome.apply(lambda x: "Covid-19-AstraZeneca" if x == "Vacina Covid-19 - Covishield" else x)
-
+        dataframe.vacina_nome = dataframe.vacina_nome.apply(lambda x: VACCINE_NAME[x])
         dataframe = dataframe.drop_duplicates(subset=['paciente_id', 'vacina_dose']).reset_index(drop=True).pivot(index=['paciente_id', 'vacina_nome'], columns='vacina_dose', values='vacina_aplicacao').reset_index(drop=False)
         dataframe = dataframe.rename(columns={'1ªDose': 'vacina_dose_1', '2ªDose': 'vacina_dose_2'})
 
@@ -136,7 +137,7 @@ class Tratamento():
         dataframe = dataframe.dropna(subset=["vacina_dose_1"]).reset_index(drop=True)
 
         # Removendo registros (data 2a dose anterior ou igual à 1a):
-        dataframe = dataframe[dataframe.vacina_dose_1 < dataframe.vacina_dose_2].reset_index(drop=True)
+        dataframe = dataframe[(dataframe.vacina_dose_1 < dataframe.vacina_dose_2) | dataframe.vacina_dose_2.isna()].reset_index(drop=True)
 
         return dataframe
 
@@ -218,23 +219,3 @@ class GeraDados():
             delay_df = pd.DataFrame(columns=[tip+item for tip in ['neg-', 'nul-', 'pos-'] for item in DOSE_OFFSET])
 
         return delay_df
-
-    def gera_serie_abandono(self):
-        data = self.process_source_data
-        # Taxa de abandono hoje:
-        date = datetime.today().date()
-        rate_covac = abandon_rate(data=data, date=date, vaccine_name="Covid-19-Coronavac-Sinovac/Butantan")
-        rate_astra = abandon_rate(data=data, date=date, vaccine_name="Covid-19-AstraZeneca")
-        if data.shape[0]!=0:
-            date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
-            # Calculando série histórica do abandono vacinal:
-            ab_df_covac = abandon_series(vaccine_name="Covid-19-Coronavac-Sinovac/Butantan", date_interval=date_interval, data=data)
-            ab_df_astra = abandon_series(vaccine_name="Covid-19-AstraZeneca", date_interval=date_interval, data=data)
-        else:
-            ab_df_covac = pd.DataFrame(columns=["Covid-19-Coronavac-Sinovac/Butantan"])
-            ab_df_astra = pd.DataFrame(columns=["Covid-19-AstraZeneca"])
-
-        # Série historica abandono
-        ab_df = pd.concat([ab_df_covac, ab_df_astra])
-
-        return ab_df
