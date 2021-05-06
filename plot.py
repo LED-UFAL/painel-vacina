@@ -26,12 +26,12 @@ timestamp = float(open(os.path.join(CURRENT_DIR, 'datasets', 'data_timestamp.txt
 DATA_DATETIME = datetime.fromtimestamp(timestamp).strftime("%d de %B de %Y, às %H:%M")
 
 ## Lê a string com a data coletada na hora de baixar os dados com baixar_csv.py
-DATA_DATE_STR = open('data_date_str.txt', 'r').read()
+DATA_DATE_STR = open(os.path.join(CURRENT_DIR, 'datasets', 'data_date_str.txt'), 'r').read()
 
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
 all_options = {
-    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item!='data_timestamp.txt'
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in ['data_timestamp.txt', 'data_date_str.txt']
 }
 
 app.layout = html.Div(children=[
