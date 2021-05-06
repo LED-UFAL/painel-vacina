@@ -68,7 +68,9 @@ def carrega_base(file_path, chunk_size=int(1e6)):
     ## a data de importacao rnds.
     date_str = dataframe['data_importacao_rnds'].max()
     date_timestamp = str(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').timestamp())
-    open('data_timestamp.txt', 'w').write(str(date_timestamp))
+    if not os.path.exists(os.path.join('datasets')):
+        os.mkdir(os.path.join('datasets'))
+    open(os.path.join('datasets','data_timestamp.txt'), 'w').write(str(date_timestamp))
 
     return dataframe
 
