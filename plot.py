@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Run this app with `python app.py` and
-# visit http://127.0.0.1:8050/ in your web browser.
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -16,8 +11,8 @@ import locale
 import os
 import time
 
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -25,18 +20,23 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 CURRENT_DIR = os.getcwd()
+
+## Lê o timestamp dos dados, converte para float e traduz para datetime e mostra no dashboard
+timestamp = float(open('data_timestamp.txt', 'r').read())
+DATA_DATETIME = datetime.fromtimestamp(timestamp).strftime("%d de %B de %Y, às %H:%M")
+
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
+
 all_options = {
     item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados
 }
-MODIFIED_DIR_DATETIME = datetime.fromtimestamp(os.path.getmtime(os.path.join(CURRENT_DIR, 'datasets'))).strftime("%d de %B de %Y, às %H:%M")
 
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),
 
     html.Div(children='Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.',
         style=dict(fontSize='25px')),
-    html.Div(children='Dados coletados em: {}'.format(MODIFIED_DIR_DATETIME),
+    html.Div(children='Dados coletados em: {}'.format(DATA_DATETIME),
         style=dict(fontSize='18px')),
     html.Div([
         html.Div([
