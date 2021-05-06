@@ -19,16 +19,16 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-CURRENT_DIR = os.getcwd()
+CURRENT_DIR = os.path.dirname(__file__)
 
 ## Lê o timestamp dos dados, converte para float e traduz para datetime e mostra no dashboard
-timestamp = float(open('data_timestamp.txt', 'r').read())
+timestamp = float(open(os.path.join(CURRENT_DIR, 'datasets', 'data_timestamp.txt'), 'r').read())
 DATA_DATETIME = datetime.fromtimestamp(timestamp).strftime("%d de %B de %Y, às %H:%M")
 
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
 all_options = {
-    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item!='data_timestamp.txt'
 }
 
 app.layout = html.Div(children=[
