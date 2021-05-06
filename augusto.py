@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import os
 
-CURRENT_DIR = os.getcwd()
+CURRENT_DIR = os.path.dirname(__file__)
 
 
 def plotar_doses_por_dia(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
