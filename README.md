@@ -12,6 +12,12 @@ Baixe ou clone o repositório. Na pasta do painel-vacina:
     $ . venv/bin/activate
     $ pip install -r requirements.txt
     
+# Servindo os dados
+
+* Faça download do `.zip` do [conjunto de datasets](https://drive.google.com/drive/folders/1JNnK71nIsvM_6WqZA9gxF3LkHK-3F1JI?usp=sharing).
+
+* Descompacte os arquivos na raiz da pasta do painel-vacina.
+    
 # Executando o painel
 
 Na pasta do painel-vacina: 
