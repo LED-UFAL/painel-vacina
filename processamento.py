@@ -1,6 +1,6 @@
 import os
 import argparse
-
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -63,6 +63,12 @@ def carrega_base(file_path, chunk_size=int(1e6)):
         dataframe = pd.concat([dataframe, chunk_df], ignore_index=True)
 
     dataframe = dataframe.dropna()
+
+    ## Salva o timestamp dos dados baseado na hora da última vacina aplicada segundo
+    ## a data de importacao rnds.
+    date_str = dataframe['data_importacao_rnds'].max()
+    date_timestamp = str(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').timestamp())
+    open('data_timestamp.txt', 'w').write(str(date_timestamp))
 
     return dataframe
 
