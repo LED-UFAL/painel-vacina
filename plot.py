@@ -25,6 +25,9 @@ CURRENT_DIR = os.getcwd()
 timestamp = float(open('data_timestamp.txt', 'r').read())
 DATA_DATETIME = datetime.fromtimestamp(timestamp).strftime("%d de %B de %Y, às %H:%M")
 
+## Lê a string com a data coletada na hora de baixar os dados com baixar_csv.py
+DATA_DATE_STR = open('data_date_str.txt', 'r').read()
+
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
 all_options = {
@@ -36,7 +39,7 @@ app.layout = html.Div(children=[
 
     html.Div(children='Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.',
         style=dict(fontSize='25px')),
-    html.Div(children='Dados coletados em: {}'.format(DATA_DATETIME),
+    html.Div(children='Dados coletados em: {}'.format(DATA_DATE_STR),
         style=dict(fontSize='18px')),
     html.Div([
         html.Div([
