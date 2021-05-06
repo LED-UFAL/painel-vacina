@@ -16,7 +16,9 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 server = app.server
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -65,6 +67,13 @@ app.layout = html.Div(children=[
 
     html.H1('Doses aplicadas e atraso vacinal',
         style=dict(display='flex', justifyContent='center', marginTop='50px', marginBottom='50px')),
+
+    html.Div([
+        html.Div(id='total-aplicado', className='two columns'),
+        html.Div(id='total-1as-doses', className='two columns'),
+        html.Div(id='total-2as-doses', className='two columns'),
+        html.Div(id='media-ultimos-30dias', className='three columns'),
+    ], className="row"),
 
     html.Div([
         html.Div([
@@ -242,6 +251,64 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         )
     ]
 
+'''
+html.Div(id='total-aplicado'),
+html.Div(id='total-1as-doses'),
+html.Div(id='total-2as-doses'),
+html.Div(id='media-ultimos-30dias'),
+'''
+
+@app.callback(
+    Output('total-aplicado', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'),
+    Input('tipo-vacina-dropdown', 'value'))
+def total_doses_aplicadas(estado_selecionado, municipio_selecionada, vacina_selecionada):
+    return [
+        html.H2('Total Aplicado'),
+        html.H4(augusto.total_doses_aplicadas(
+            estado_selecionado, municipio_selecionada, vacina_selecionada
+        ))
+    ]
+
+@app.callback(
+    Output('total-1as-doses', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'),
+    Input('tipo-vacina-dropdown', 'value'))
+def total_1as_doses_aplicadas(estado_selecionado, municipio_selecionada, vacina_selecionada):
+    return [
+        html.H2('1ª Doses'),
+        html.H4(augusto.total_1as_doses_aplicadas(
+            estado_selecionado, municipio_selecionada, vacina_selecionada
+        ))
+    ]
+
+@app.callback(
+    Output('total-2as-doses', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'),
+    Input('tipo-vacina-dropdown', 'value'))
+def total_2as_doses_aplicadas(estado_selecionado, municipio_selecionada, vacina_selecionada):
+    return [
+        html.H2('2ª doses'),
+        html.H4(augusto.total_2as_doses_aplicadas(
+            estado_selecionado, municipio_selecionada, vacina_selecionada
+        ))
+    ]
+
+@app.callback(
+    Output('media-ultimos-30dias', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'),
+    Input('tipo-vacina-dropdown', 'value'))
+def media_ultimos_30dias(estado_selecionado, municipio_selecionada, vacina_selecionada):
+    return [
+        html.H2('Média em 30 dias'),
+        html.H4(augusto.media_ultimos_30dias(
+            estado_selecionado, municipio_selecionada, vacina_selecionada
+        ))
+    ]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
