@@ -74,7 +74,7 @@ def plot_delay(uf, municipio, prefix):
 
 
 ## INDICADORES
-def total_doses_aplicadas(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
+def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
 	## NUMERO TOTAL DE DOSES APLICADA POR DIA <ESTADO>, <CIDADE> (se tiver)
 	folder = os.path.join(CURRENT_DIR, 'datasets', uf,'doses_por_dia')
 	if vacina=='coronavac':
@@ -85,62 +85,17 @@ def total_doses_aplicadas(uf='TODOS', municipio='TODOS', vacina='todas', grafico
 		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_pfizer.csv', sep=';')
 	else:
 		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
-	#fig.update_layout(
-	#    xaxis_tickformat = '%d/%m/%y'
-	#)
-	return plotdf['Quantidade'].sum()
 
-def total_1as_doses_aplicadas(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
-	## NUMERO TOTAL DE DOSES APLICADA POR DIA <ESTADO>, <CIDADE> (se tiver)
-	folder = os.path.join(CURRENT_DIR, 'datasets', uf,'doses_por_dia')
-	if vacina=='coronavac':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_coronavac.csv', sep=';')
-	elif vacina=='astrazeneca':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_astrazeneca.csv', sep=';')
-	elif vacina=='pfizer':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_pfizer.csv', sep=';')
-	else:
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
-	#fig.update_layout(
-	#    xaxis_tickformat = '%d/%m/%y'
-	#)
-	return plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()
 
-def total_2as_doses_aplicadas(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
-	## NUMERO TOTAL DE DOSES APLICADA POR DIA <ESTADO>, <CIDADE> (se tiver)
-	folder = os.path.join(CURRENT_DIR, 'datasets', uf,'doses_por_dia')
-	if vacina=='coronavac':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_coronavac.csv', sep=';')
-	elif vacina=='astrazeneca':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_astrazeneca.csv', sep=';')
-	elif vacina=='pfizer':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_pfizer.csv', sep=';')
-	else:
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
-	#fig.update_layout(
-	#    xaxis_tickformat = '%d/%m/%y'
-	#)
-	return plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()
-
-def media_ultimos_30dias(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):
-	## NUMERO TOTAL DE DOSES APLICADA POR DIA <ESTADO>, <CIDADE> (se tiver)
-	folder = os.path.join(CURRENT_DIR, 'datasets', uf,'doses_por_dia')
-	if vacina=='coronavac':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_coronavac.csv', sep=';')
-	elif vacina=='astrazeneca':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_astrazeneca.csv', sep=';')
-	elif vacina=='pfizer':
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'_pfizer.csv', sep=';')
-	else:
-		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
-	#fig.update_layout(
-	#    xaxis_tickformat = '%d/%m/%y'
-	#)
-
+	total = plotdf['Quantidade'].sum()
+	qnt_1as_doses = plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()
+	qnt_2as_doses = plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()
 	date_str = plotdf['Data'].max()
 	date = datetime.strptime(date_str, '%Y-%m-%d').date()
 	date_minus = date - timedelta(days=30)
 	date_minus_str = str(date_minus)
 
 	plotdf = plotdf.loc[(plotdf['Data'] >= date_minus_str) & (plotdf['Data'] <= date_str)]
-	return format(plotdf['Quantidade'].sum()/30, ".2f")
+	media = format(plotdf['Quantidade'].sum()/30, ".2f")
+
+	return total, qnt_1as_doses, qnt_2as_doses, media
