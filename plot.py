@@ -77,12 +77,13 @@ app.layout = html.Div(children=[
             html.H6('Tipo de vacina'),
                 dcc.Dropdown(
                     id='tipo-vacina-dropdown',
-             options=[
-                {'label': 'TODAS', 'value': 'todas'},
-                {'label': 'AstraZeneca', 'value': 'astrazeneca'},
-                {'label': 'CoronaVac', 'value': 'coronavac'},
-                {'label': 'Pfizer', 'value': 'pfizer'}
-            ]),
+                    options=[
+                        {'label': 'TODAS', 'value': 'todas'},
+                        {'label': 'AstraZeneca', 'value': 'astrazeneca'},
+                        {'label': 'CoronaVac', 'value': 'coronavac'},
+                        {'label': 'Pfizer', 'value': 'pfizer'}],
+                    value='todas'
+                ),
             html.Div(id='mostrar-doses-aplicadas'),
         ], className="six columns"),
 
