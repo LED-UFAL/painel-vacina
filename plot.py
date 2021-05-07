@@ -16,7 +16,9 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 server = app.server
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -26,12 +28,12 @@ timestamp = float(open(os.path.join(CURRENT_DIR, 'datasets', 'data_timestamp.txt
 DATA_DATETIME = datetime.fromtimestamp(timestamp).strftime("%d de %B de %Y, às %H:%M")
 
 ## Lê a string com a data coletada na hora de baixar os dados com baixar_csv.py
-DATA_DATE_STR = open('data_date_str.txt', 'r').read()
+DATA_DATE_STR = open(os.path.join(CURRENT_DIR, 'datasets', 'data_date_str.txt'), 'r').read()
 
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
 all_options = {
-    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item!='data_timestamp.txt'
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in ['data_timestamp.txt', 'data_date_str.txt']
 }
 
 app.layout = html.Div(children=[
@@ -66,6 +68,8 @@ app.layout = html.Div(children=[
     html.H1('Doses aplicadas e atraso vacinal',
         style=dict(display='flex', justifyContent='center', marginTop='50px', marginBottom='50px')),
 
+    html.Div(id='indicadores'),
+
     html.Div([
         html.Div([
             html.H3('Doses aplicadas por dia'),
@@ -73,12 +77,13 @@ app.layout = html.Div(children=[
             html.H6('Tipo de vacina'),
                 dcc.Dropdown(
                     id='tipo-vacina-dropdown',
-             options=[
-                {'label': 'TODAS', 'value': 'todas'},
-                {'label': 'AstraZeneca', 'value': 'astrazeneca'},
-                {'label': 'CoronaVac', 'value': 'coronavac'},
-                {'label': 'Pfizer', 'value': 'pfizer'}
-            ]),
+                    options=[
+                        {'label': 'TODAS', 'value': 'todas'},
+                        {'label': 'AstraZeneca', 'value': 'astrazeneca'},
+                        {'label': 'CoronaVac', 'value': 'coronavac'},
+                        {'label': 'Pfizer', 'value': 'pfizer'}],
+                    value='todas'
+                ),
             html.Div(id='mostrar-doses-aplicadas'),
         ], className="six columns"),
 
@@ -242,6 +247,36 @@ def set_display_children(estado_selecionado, municipio_selecionada):
         )
     ]
 
+@app.callback(
+    Output('indicadores', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'),
+    Input('tipo-vacina-dropdown', 'value'))
+def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
+    total, qnt_1as_doses, qnt_2as_doses, media = augusto.indicadores(
+        estado_selecionado, municipio_selecionada, vacina_selecionada
+    )
+
+    r = html.Div([
+        html.Div([
+            html.H2('Total Aplicado'),
+            html.H4(total)
+        ], className='two columns'),
+        html.Div([
+            html.H2('1ª Doses'),
+            html.H4(qnt_1as_doses)
+        ], className='two columns'),
+        html.Div([
+            html.H2('2ª Doses'),
+            html.H4(qnt_2as_doses)
+        ], className='two columns'),
+        html.Div([
+            html.H2('Média em 30 dias'),
+            html.H4(media)
+        ], className='three columns'),
+    ], className="row")
+
+    return r
 
 if __name__ == '__main__':
     app.run_server(debug=True)

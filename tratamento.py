@@ -83,10 +83,11 @@ def generates_demand(df, max_window):
     :returns: Pandas DataFrame with time series.
     """
     df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=max_window))
-    df = df.loc[(df['dataSegundaDose']>=pd.Timestamp('today'))].groupby(['dataSegundaDose']).size()
+    df = df.groupby(['dataSegundaDose']).size()
     if df.shape[0]!=0:
         idx = pd.date_range(df.index.min(), df.index.max())
         df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+        df = df.loc[df['index']>pd.Timestamp('today')].reset_index(drop=True)
     else:
         df = pd.DataFrame(columns=['index', 'count'])
     return df
@@ -182,11 +183,12 @@ class GeraDados():
             df_coronavac['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
             df_pfizer = df.loc[df['vacina_nome']=='Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer'].reset_index(drop=True)
             df_pfizer['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=25))
-            df = pd.concat([df_coronavac, df_astrazeneca]).reset_index(drop=True)
-            df = df.loc[df['dataSegundaDose']>=pd.Timestamp('today')].groupby(['dataSegundaDose']).size()
+            df = pd.concat([df_coronavac, df_astrazeneca, df_pfizer]).reset_index(drop=True)
+            df = df.groupby(['dataSegundaDose']).size()
             if df.shape[0]!=0:
                 idx = pd.date_range(df.index.min(), df.index.max())
                 df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
+                df = df.loc[df['index']>=pd.Timestamp('today')].reset_index(drop=True)
             else:
                 df = pd.DataFrame(columns=['index', 'count'])
 
