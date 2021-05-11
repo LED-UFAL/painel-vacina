@@ -86,6 +86,8 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	else:
 		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
 
+	velocidades = pd.read_csv('datasets/velocidades_doses.csv', sep=';')
+	faixas = pd.read_csv('datasets/faixas_niveis_2020_ex.csv', sep=';')
 
 	total = plotdf['Quantidade'].sum()
 	qnt_1as_doses = plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()
@@ -98,4 +100,22 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	plotdf = plotdf.loc[(plotdf['Data'] >= date_minus_str) & (plotdf['Data'] <= date_str)]
 	media = format(plotdf['Quantidade'].sum()/30, ".2f")
 
-	return total, qnt_1as_doses, qnt_2as_doses, media
+	vel = 1.0
+	pop_adultos = 1
+
+	if uf == 'BRASIL':
+		vel = velocidades['Velocidade'].min()
+		pop_adultos = faixas.loc[faixas['Estado'] == 'TODOS']['Adultos'].sum()
+
+		print(uf, municipio, vel, pop_adultos)
+	elif municipio == 'TODOS':
+		vel = velocidades.loc[velocidades['Estado'] == uf]['Velocidade'].min()
+		pop_adultos = faixas.loc[(faixas['Estado'] == uf) & (faixas['Municipio'] == municipio)]['Adultos'].sum()
+	else:
+		vel = velocidades.loc[(velocidades['Estado'] == uf) & (velocidades['Municipio'] == municipio)]['Velocidade'].min()
+		pop_adultos = faixas.loc[(faixas['Estado'] == uf) & (faixas['Municipio'] == municipio)]['Adultos'].sum()
+
+	previsao = pop_adultos/vel
+	previsao = format(previsao, ".2f")
+
+	return total, qnt_1as_doses, qnt_2as_doses, media, previsao

@@ -33,7 +33,7 @@ DATA_DATE_STR = open(os.path.join(CURRENT_DIR, 'datasets', 'data_date_str.txt'),
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
 all_options = {
-    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in ['data_timestamp.txt', 'data_date_str.txt']
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in ['data_timestamp.txt', 'data_date_str.txt', 'velocidades_doses.csv', 'cod_cidades.csv', 'faixas_niveis_2020.zip', 'faixas_niveis_2020_ex.csv']
 }
 
 app.layout = html.Div(children=[
@@ -253,7 +253,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     Input('municipio-dropdown', 'value'),
     Input('tipo-vacina-dropdown', 'value'))
 def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
-    total, qnt_1as_doses, qnt_2as_doses, media = augusto.indicadores(
+    total, qnt_1as_doses, qnt_2as_doses, media, previsao = augusto.indicadores(
         estado_selecionado, municipio_selecionada, vacina_selecionada
     )
 
@@ -272,7 +272,12 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
         ], className='two columns'),
         html.Div([
             html.H2('Média em 30 dias'),
-            html.H4(media)
+            html.H4(media),
+            html.P('Primeiras e segundas doses')
+        ], className='three columns'),
+        html.Div([
+            html.H2('Fim da Vacinação'),
+            html.H4('{} dias'.format(previsao)),
         ], className='three columns'),
     ], className="row")
 
