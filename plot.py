@@ -274,16 +274,16 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
             html.H2('Ritmo de Vacinação'),
             html.H4(media_1as),
             html.P('das primeiras doses')
-        ], className='three columns'),
+        ], className='two columns'),
         html.Div([
             html.H2('Ritmo de Vacinação'),
             html.H4(media_2as),
             html.P('das segundas doses')
-        ], className='three columns'),
+        ], className='two columns'),
         html.Div([
             html.H2('Fim da Vacinação'),
             html.H4('{} dias'.format(previsao)),
-        ], className='three columns'),
+        ], className='two columns'),
     ], className="row")
 
     return r
