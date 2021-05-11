@@ -253,7 +253,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     Input('municipio-dropdown', 'value'),
     Input('tipo-vacina-dropdown', 'value'))
 def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
-    total, qnt_1as_doses, qnt_2as_doses, media, previsao = augusto.indicadores(
+    total, qnt_1as_doses, qnt_2as_doses, media_1as, media_2as, previsao = augusto.indicadores(
         estado_selecionado, municipio_selecionada, vacina_selecionada
     )
 
@@ -271,9 +271,14 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
             html.H4(qnt_2as_doses)
         ], className='two columns'),
         html.Div([
-            html.H2('Média em 30 dias'),
-            html.H4(media),
-            html.P('Primeiras e segundas doses')
+            html.H2('Ritmo de Vacinação'),
+            html.H4(media_1as),
+            html.P('das primeiras doses')
+        ], className='three columns'),
+        html.Div([
+            html.H2('Ritmo de Vacinação'),
+            html.H4(media_2as),
+            html.P('das segundas doses')
         ], className='three columns'),
         html.Div([
             html.H2('Fim da Vacinação'),
