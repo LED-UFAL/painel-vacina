@@ -32,8 +32,10 @@ DATA_DATE_STR = open(os.path.join(CURRENT_DIR, 'datasets', 'data_date_str.txt'),
 
 lista_estados = sorted(os.listdir(os.path.join(CURRENT_DIR, 'datasets')))
 
+exclude_list = ['data_timestamp.txt', 'data_date_str.txt', 'velocidades_doses.csv', 'cod_cidades.csv', 'faixas_niveis_2020.zip', 'df_tratado.csv', 'faixas_niveis_2020_ex.csv', 'datasus', 'ibge', 'raw']
+
 all_options = {
-    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in ['data_timestamp.txt', 'data_date_str.txt', 'velocidades_doses.csv', 'cod_cidades.csv', 'faixas_niveis_2020.zip', 'faixas_niveis_2020_ex.csv']
+    item: ['TODOS']+sorted([mun for mun in os.listdir(os.path.join(CURRENT_DIR, 'datasets', item, 'abandono-atraso-vacinal')) if mun!='TODOS']) for item in lista_estados if item not in exclude_list
 }
 
 app.layout = html.Div(children=[
@@ -138,6 +140,22 @@ app.layout = html.Div(children=[
 
         """
     ),
+
+    html.H1('Cobertura Vacinal',
+            style=dict(display='flex', justifyContent='center', marginTop='50px', marginBottom='50px')),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-cobertura'),
+        ], className="six columns"),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-cobertura-total'),
+        ], className="six columns"),
+
+    ], className="row"),])
+
 ])
 
 @app.callback(
@@ -248,6 +266,34 @@ def set_display_children(estado_selecionado, municipio_selecionada):
     ]
 
 @app.callback(
+    Output('mostrar-cobertura', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Cobertura vacinal por faixa'),
+        html.H5('Número de pessoas por sexo e idade vacinadas no município. '),
+            dcc.Graph(
+                id='cobertura-graph',
+                figure=augusto.plotar_cobertura(estado_selecionado, municipio_selecionada)
+            )
+    ]
+
+@app.callback(
+    Output('mostrar-cobertura-total', 'children'),
+    Input('estado-dropdown', 'value'),
+    Input('municipio-dropdown', 'value'))
+def set_display_children(estado_selecionado, municipio_selecionada):
+    return [
+        html.H3('Cobertura percentual'),
+        html.H5('Percentual de pessoas por status de vacinação. '),
+            dcc.Graph(
+                id='cobertura-total-graph',
+                figure=augusto.plotar_cobertura_total(estado_selecionado, municipio_selecionada)
+            )
+    ]
+
+@app.callback(
     Output('indicadores', 'children'),
     Input('estado-dropdown', 'value'),
     Input('municipio-dropdown', 'value'),
@@ -289,4 +335,4 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
     return r
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0',port=5000, debug=True)

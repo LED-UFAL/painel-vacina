@@ -72,6 +72,116 @@ def plot_delay(uf, municipio, prefix):
     )
     return fig
 
+def plotar_cobertura(uf='TODOS', municipio='TODOS'):
+	sample_multiply = 1 # Produção
+	# sample_multiply = 100 # Testes
+
+	folder = os.path.join(CURRENT_DIR, 'datasets', uf, 'cobertura')
+	dfFinal = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
+	dfFinal = dfFinal.set_index(['Sexo', 'Dose', 'Faixa'])
+
+	women_bins = dfFinal.loc[('F', '1ªDose'), 'Total'] * -1
+	men_bins = dfFinal.loc[('M', '1ªDose'), 'Total']
+
+	y = dfFinal.index.get_level_values(2).unique()
+
+	layout = go.Layout(title='Cobertura vacinal',
+					   yaxis=go.layout.YAxis(title='Faixa etária'),
+					   xaxis=go.layout.XAxis(
+						   # range=[-10000000, 10000000],
+						   # tickvals=[-10000000, -5000000, 0, 5000000, 10000000],
+						   # ticktext=['10M', '5M', 0, '5M', '10M'],
+						   showticklabels=False,
+						   title='Mulheres X Homens'),
+					   barmode='overlay',
+					   bargap=0.1)
+	data=[]
+	data = [go.Bar(y=y,
+				   x=men_bins,
+				   orientation='h',
+				   name='População',
+				   hoverinfo='x',
+				   hovertemplate='%{x:,}<extra></extra>',
+				   marker=dict(color='powderblue')
+				   ),
+			go.Bar(y=y,
+				   x=women_bins,
+				   orientation='h',
+				   showlegend=False,
+				   text=-1 * women_bins.astype('int'),
+				   hoverinfo='x',
+				   hovertemplate='%{text:,}<extra></extra>',
+				   marker=dict(color='powderblue')
+				   )]
+
+	if len(dfFinal.index.get_level_values(1).unique()) >= 1:
+		women_vac_bins = dfFinal.loc[('F', '1ªDose'), 'Vacinados'] * -1 * sample_multiply
+		men_vac_bins = dfFinal.loc[('M', '1ªDose'), 'Vacinados'] * sample_multiply
+
+		data = data + [
+			go.Bar(y=y,
+				   x=men_vac_bins,
+				   orientation='h',
+				   name='1a Dose',
+				   hoverinfo='x',
+				   hovertemplate='%{x:,}<extra></extra>',
+				   opacity=0.5,
+				   marker=dict(color='teal')
+				   ),
+			go.Bar(y=y,
+				   x=women_vac_bins,
+				   orientation='h',
+				   text=-1 * women_vac_bins.astype('int'),
+				   hoverinfo='x',
+				   hovertemplate='%{text:,}<extra></extra>',
+				   showlegend=False,
+				   opacity=0.5,
+				   marker=dict(color='teal')
+				   )]
+
+	if len(dfFinal.index.get_level_values(1).unique()) == 2:
+		women_vac2_bins = dfFinal.loc[('F', '2ªDose'), 'Vacinados'] * -1 * sample_multiply
+		men_vac2_bins = dfFinal.loc[('M', '2ªDose'), 'Vacinados'] * sample_multiply
+
+		data = data + [
+			go.Bar(y=y,
+				   x=men_vac2_bins,
+				   orientation='h',
+				   name='2a Dose',
+				   hoverinfo='x',
+				   hovertemplate='%{x:,}<extra></extra>',
+				   opacity=0.75,
+				   marker=dict(color='seagreen')
+				   ),
+			go.Bar(y=y,
+				   x=women_vac2_bins,
+				   orientation='h',
+				   text=-1 * women_vac2_bins.astype('int'),
+				   hoverinfo='x',
+				   hovertemplate='%{text:,}<extra></extra>',
+				   showlegend=False,
+				   opacity=0.75,
+				   marker=dict(color='seagreen')
+				   )]
+	fig = go.Figure(data=data, layout=layout)
+	return fig
+
+def plotar_cobertura_total(uf='TODOS', municipio='TODOS'):
+	sample_multiply = 1 # Produção
+	# sample_multiply = 100 # Testes
+
+	folder = os.path.join(CURRENT_DIR, 'datasets', uf, 'cobertura')
+	dfFinal = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
+	dfFinal = dfFinal.set_index(['Sexo', 'Dose', 'Faixa'])
+
+	dfTotal = dfFinal.groupby(level=[1]).sum()
+
+	duas_doses = dfTotal.loc['2ªDose', 'Vacinados'] * sample_multiply
+	uma_dose = (dfTotal.loc['1ªDose', 'Vacinados'] * sample_multiply) - duas_doses
+	nao_vacinados = dfTotal.loc['1ªDose', 'Total'] - uma_dose
+	fig = px.pie(values=[uma_dose, duas_doses, nao_vacinados] , names=['Uma dose', 'Duas doses', 'Não vacinados'],
+				 title='Cobertura total')
+	return fig
 
 ## INDICADORES
 def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES POR DIA'):

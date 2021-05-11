@@ -1,0 +1,3 @@
+fonte dados de população: 
+
+http://tabnet.datasus.gov.br/cgi/deftohtm.exe?popsvs/cnv/popbr.def
