@@ -99,7 +99,7 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 
 	plotdf = plotdf.loc[(plotdf['Data'] >= date_minus_str) & (plotdf['Data'] <= date_str)]
 	media_1as = format(plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()/30, ".2f")
-	media_2as = format(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30, ".2f")
+	media_2as = plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30
 
 	vel = 1.0
 	pop_adultos = 1
@@ -118,5 +118,9 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 
 	previsao = pop_adultos/vel
 	previsao = format(previsao, ".2f")
+
+	# apenas pq o krerley pediu por enquanto
+	previsao = pop_adultos/media_2as
+	media_2as = format(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30, ".2f")
 
 	return total, qnt_1as_doses, qnt_2as_doses, media_1as, media_2as, previsao
