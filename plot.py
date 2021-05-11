@@ -258,33 +258,37 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
     )
 
     r = html.Div([
-        html.Div([
-            html.H2('Total Aplicado'),
-            html.H4(total)
-        ], className='two columns'),
-        html.Div([
-            html.H2('1ª Doses'),
-            html.H4(qnt_1as_doses)
-        ], className='two columns'),
-        html.Div([
-            html.H2('2ª Doses'),
-            html.H4(qnt_2as_doses)
-        ], className='two columns'),
-        html.Div([
-            html.H2('Ritmo de Vacinação'),
-            html.H4(media_1as),
-            html.P('das primeiras doses')
-        ], className='three columns'),
-        html.Div([
-            html.H2('Ritmo de Vacinação'),
-            html.H4(media_2as),
-            html.P('das segundas doses')
-        ], className='three columns'),
-        html.Div([
-            html.H2('Fim da Vacinação'),
-            html.H4('{} dias'.format(previsao)),
-        ], className='three columns'),
-    ], className="row")
+            html.Div([
+            html.Div([
+                html.H2('Total Aplicado'),
+                html.H4(total)
+            ], className='two columns'),
+            html.Div([
+                html.H2('1ª Doses'),
+                html.H4(qnt_1as_doses)
+            ], className='two columns'),
+            html.Div([
+                html.H2('2ª Doses'),
+                html.H4(qnt_2as_doses)
+            ], className='two columns'),
+            html.Div([
+                html.H2('Ritmo de Vacinação'),
+                html.H4('{} por dia'.format(media_1as)),
+                html.P('para primeiras doses')
+            ], className='three columns'),
+            html.Div([
+                html.H2('Ritmo de Vacinação'),
+                html.H4('{} por dia'.format(media_2as)),
+                html.P('para segundas doses')
+            ], className='three columns'),
+            ], className="row"),
+            html.Div([
+                html.Div([
+                    html.H2('Fim da Vacinação'),
+                    html.H4('{} dias'.format(previsao)),
+                ], className='three columns'),
+            ], className='row')
+    ])
 
     return r
 

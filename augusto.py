@@ -120,7 +120,7 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	previsao = format(previsao, ".2f")
 
 	# apenas pq o krerley pediu por enquanto
-	previsao = pop_adultos/media_2as
+	previsao = format(pop_adultos/media_2as, ".2f")
 	media_2as = format(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30, ".2f")
 
 	return total, qnt_1as_doses, qnt_2as_doses, media_1as, media_2as, previsao
