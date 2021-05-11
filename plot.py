@@ -272,13 +272,13 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
         ], className='two columns'),
         html.Div([
             html.H2('Ritmo de Vacinação'),
-            html.H4(media_1as),
-            html.P('das primeiras doses')
+            html.H4("{} doses/dia".format(media_1as)),
+            html.P('para as primeiras doses')
         ], className='two columns'),
         html.Div([
             html.H2('Ritmo de Vacinação'),
-            html.H4(media_2as),
-            html.P('das segundas doses')
+            html.H4("{} doses/dia".format(media_2as)),
+            html.P('para as segundas doses')
         ], className='two columns'),
         html.Div([
             html.H2('Fim da Vacinação'),
