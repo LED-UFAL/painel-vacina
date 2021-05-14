@@ -98,6 +98,37 @@ A saída deverá ser a seguinte tabela:
 
 A implementação é trivial, bastando indexar a tabela resultante (inicialmente zerada) pelos valores da data e, para cada registro na tabela de entrada, incrementar o valor em 1 nas células [DATA_APLICAÇÃO, NOME_VACINA-DOSE_VACINA] e [DATA_APLICAÇÃO, DOSE_VACINA].
 
+### Total de doses aplicadas
+
+* Objetivo:
+    * Calcular o número total de doses aplicadas nos últimos dias por tipo de vacina e por tipo de dose.
+* Entrada:
+    * Tabela Processada no passo anterior: `doses-aplicadas-por-dia.csv`.
+* SAÍDA:
+    * Para cada par (UF, MUNICIPIO), isto é, cada diretório no __nível municipal__, gerar uma arquivo com nome `total-doses-aplicadas-por-dia.csv` com a seguinte estrutura:
+    * Uma coluna com nome __Data__ onde o único valor é uma _string_ no formato __YYYY-MM-DD__, representando a data mais recente em DATA_APLICAÇÃO.
+    * Colunas "Total de Doses Aplicadas", "Total de Primeiras Doses Aplicadas", "Total de Segundas Doses Aplicadas"
+
+Como exemplo, se a entrada for a tabela a seguir:
+
+|    Data    | A-1 | A-2 | B-1 |  Todos-1  |  Todos-2  |
+|:----------:|:---:|:---:|:---:|:---------:|:---------:|
+| 2021-01-01 |  1  |  0  |  1  |     2     |     0     |
+| 2021-01-02 |  0  |  0  |  0  |     0     |     0     |
+| 2021-02-03 |  0  |  0  |  0  |     0     |     0     |
+| 2021-01-04 |  0  |  0  |  0  |     0     |     0     |
+| 2021-01-05 |  0  |  1  |  0  |     0     |     1     |
+
+A saída será:
+
+|    Data    | Total de Doses Aplicadas | Total de Primeiras Doses Aplicadas | Total de Segundas Doses Aplicadas |
+|:----------:|:------------------------:|:----------------------------------:|:---------------------------------:|
+| 2021-01-05 |           3              |                  2                 |                  1                |
+
+#### Implementação do algoritmo
+
+A implementação é trivial, bastando acumular os valores em Todos-1 e Todos-2 da tabela `doses-aplicadas-por-dia.csv`. Para o total de doses, o valor acumulado é obtido sobre a soma das colunas Todos-1 + Todos-2.
+
 # Módulo de Visualização dos Dados
 
 O módulo de visualização é implementado pelo _script_ `data_visualization.py` que recebe como argumentos o nome do arquivo que identifica o item a ser visualizado, a unidade federativa e o município a que os dados se referem.
@@ -122,3 +153,13 @@ A seguir, detalhamos a especificação da geração dos dados de visualização 
 #### Implementação do algoritmo
 
 Na abordagem com o parâmetro para o nome da vacina, o módulo de visualização realiza um pequeno processamento da tabela, selecionando colunas que contém o nome de vacina passado.
+
+### Total de doses aplicadas
+
+* Objetivo:
+    * Visualizar o número total de doses aplicadas por tipo de vacina e por tipo de dose. Os indicadores serão simplesmente exibidos na tela do painel (sem nenhuma componente visual específica associada).
+* Entrada:
+    * Tabela processada encontrada em:
+        * datasets/AL/MACEIO/total-doses-aplicadas-por-dia.csv
+* SAÍDA:
+    * Componente HTML (texto) com os indicadores representando as números calculados, de acordo com a especificação do objetivo.
