@@ -101,7 +101,7 @@ O módulo de visualização é implementado pelo _script_ `data_visualization.py
 
 Exemplo:
 ```console
-$ python data_visualization.py doses-aplicadas-por-dia AL MACEIO
+$ python data_visualization.py demanda-vacinal AL MACEIO
 ```
 A seguir, detalhamos a especificação da geração dos dados de visualização do item "Doses Aplicadas por dia".
 
