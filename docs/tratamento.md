@@ -1,6 +1,6 @@
 # Observações para considerar no tratamento:
 
-- aplicar str.trim() em todos os campos de string para remover espaços no
+- aplicar str.strip() em todos os campos de string para remover espaços no
   início ou fim das strings;
 - não considerar a coluna `vacina_fabricante_nome` ao remover duplicados, pois
   existem, por exemplo, Coronavac registrada com fabricante FUNDACAO BUTANTAN
