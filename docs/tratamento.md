@@ -23,6 +23,10 @@
   que será futuramente usado pelos municipios.
 - Salvar os registros dos duplicados que foram excluidos em um  dataset por
   municipio, que será futuramente usado pelos municipios.
+- Higienizar todas as colunas:
+	- Tratar todas as __colunas que guardam datas__ para o formato YYYY-MM-DD.
+	- Na coluna __vacina\_descricao\_dose__ tratar o caractere \xa0.
+	- Simplificar os nomes na coluna __vacina\_nome__, por exemplo: Covid-19-Coronavac-Sinovac/Butantan => CoronaVac etc.
 
 # Questões para resolver
 
