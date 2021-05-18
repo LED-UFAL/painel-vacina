@@ -36,3 +36,7 @@ Na pasta do painel-vacina:
      * Debug mode: on
 
 Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
+
+# Colaboradores
+
+Adriano Barbosa - FACET/UFGD
