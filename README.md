@@ -40,3 +40,4 @@ Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
 # Colaboradores
 
 Adriano Barbosa - FACET/UFGD
+Krerley Oliveira - LED/UFAL
