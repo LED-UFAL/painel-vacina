@@ -36,3 +36,16 @@ Na pasta do painel-vacina:
      * Debug mode: on
 
 Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
+
+# Carregando dados no banco
+
+* é preciso ter uma instalação do postgresql (testado na 9.5)
+    * usuário: usr_vacinas 
+    * senha: sovacinasalva
+    * porta:5432
+    * bancp: vacinas
+* Rodar:
+    * sh run_setup.sh
+    * sh run_extract.sh
+    * sh run_load.sh
+    * sh run_clean.sh
