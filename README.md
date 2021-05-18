@@ -42,3 +42,6 @@ Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
 Adriano Barbosa - FACET/UFGD
 
 Krerley Oliveira - LED/UFAL
+
+Luiz Celso Gomes-Jr - UTFPR
+
