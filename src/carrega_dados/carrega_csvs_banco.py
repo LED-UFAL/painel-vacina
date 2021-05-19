@@ -11,6 +11,7 @@ from os.path import isfile, join
 from datetime import datetime
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 from settings import *
 
@@ -123,7 +124,7 @@ COLUNAS_DATA
 
 
 
-for file in last_files[:2]:
+for file in tqdm(last_files):
     print('Processing...', file)
     for chunk in pd.read_csv(data_dir + file, sep=';', dtype=FIELD_TYPE_LIST, parse_dates=COLUNAS_DATA, chunksize=chunk_size):
         chunk.to_sql(
