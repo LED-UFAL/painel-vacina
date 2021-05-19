@@ -16,6 +16,8 @@ locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+# para deploy na url exemplo.com/painel, adicionar
+# requests_pathname_prefix='/painel/'
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ])
@@ -328,7 +330,7 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
         ], className='two columns'),
         html.Div([
             html.H2('Fim da Vacinação'),
-            html.H4('{} dias'.format(previsao)),
+            html.H4('{}'.format(previsao)),
         ], className='two columns'),
     ], className="row")
 

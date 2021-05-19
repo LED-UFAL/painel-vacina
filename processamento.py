@@ -7,9 +7,10 @@ from tqdm import tqdm
 
 from tratamento import GeraDados
 
+
 CURRENT_DIR = os.path.dirname(__file__)
 
-FIELD_LIST = [
+OLD_FIELD_LIST = [
     'paciente_id',
     'paciente_idade',
     'paciente_enumSexoBiologico',
@@ -28,18 +29,22 @@ FIELD_LIST = [
     'data_importacao_rnds'
 ]
 
+NEW_FIELD_LIST = [
+    col.lower() for col in OLD_FIELD_LIST
+]
+
 FIELD_TYPE_LIST = {
     'paciente_id': 'str',
-    'paciente_idade': np.uint8,
-    'paciente_enumSexoBiologico': 'str',
-    'paciente_racaCor_valor': 'str',
+    'paciente_idade': 'object',
+    'paciente_enumsexobiologico': 'str',
+    'paciente_racacor_valor': 'str',
     'estabelecimento_municipio_codigo': np.uint32,
     'estabelecimento_municipio_nome': 'str',
     'estabelecimento_uf': 'str',
-    'vacina_grupoAtendimento_nome': 'str',
+    'vacina_grupoatendimento_nome': 'str',
     'vacina_categoria_nome': 'str',
     'vacina_lote': 'str',
-    'vacina_dataAplicacao': 'str',
+    'vacina_dataaplicacao': 'str',
     'vacina_descricao_dose': 'str',
     'vacina_nome': 'str',
     'sistema_origem': 'str',
@@ -56,19 +61,20 @@ def carrega_base(file_path, chunk_size=int(1e6)):
     :returns: Pandas DataFrame with filtered columns.
     """
     dataframes = pd.read_csv(
-        file_path, sep=';', usecols=FIELD_LIST, dtype=FIELD_TYPE_LIST, chunksize=chunk_size
+        file_path, sep=';', usecols=NEW_FIELD_LIST, dtype=FIELD_TYPE_LIST, chunksize=chunk_size
     )
-    dataframe = pd.DataFrame(columns=FIELD_LIST)
+    dataframe = pd.DataFrame(columns=NEW_FIELD_LIST)
 
     for chunk_df in dataframes:
         dataframe = pd.concat([dataframe, chunk_df], ignore_index=True)
 
-    dataframe = dataframe.dropna()
+
+    dataframe = dataframe.rename(columns=dict(zip(NEW_FIELD_LIST, OLD_FIELD_LIST))).dropna()
 
     ## Salva o timestamp dos dados baseado na hora da última vacina aplicada segundo
     ## a data de importacao rnds.
     date_str = dataframe['data_importacao_rnds'].max()
-    date_timestamp = str(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').timestamp())
+    date_timestamp = str(datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp())
     if not os.path.exists(os.path.join('datasets')):
         os.mkdir(os.path.join('datasets'))
     open(os.path.join('datasets','data_timestamp.txt'), 'w').write(str(date_timestamp))

@@ -17,6 +17,10 @@ Baixe ou clone o repositório. Na pasta do painel-vacina:
 * Faça download do `.zip` do [conjunto de datasets](https://drive.google.com/drive/folders/1JNnK71nIsvM_6WqZA9gxF3LkHK-3F1JI?usp=sharing).
 
 * Descompacte os arquivos na raiz da pasta do painel-vacina.
+
+* Na pasta datasets, adicione os arquivos `cod_cidades.csv` e `faixas_niveis_2020.zip`, que podem ser baixados em: [arquivos](https://drive.google.com/drive/folders/1XXift4ZZ46zOjcC1RDyY2ZrEjuHv8fdh?usp=sharing)
+
+* Rode os scripts `gera_velocidades.py` e, depois, `gera_dicionario.py`
     
 # Executando o painel
 
@@ -32,3 +36,12 @@ Na pasta do painel-vacina:
      * Debug mode: on
 
 Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
+
+# Colaboradores
+
+Adriano Barbosa - FACET/UFGD
+
+Krerley Oliveira - LED/UFAL
+
+Luiz Celso Gomes-Jr - UTFPR
+
