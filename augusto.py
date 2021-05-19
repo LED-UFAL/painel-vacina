@@ -4,6 +4,7 @@ from plotly import graph_objects as go
 from datetime import datetime, timedelta
 from tqdm import tqdm
 import os
+from math import ceil
 
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -98,7 +99,7 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	date_minus_str = str(date_minus)
 
 	plotdf = plotdf.loc[(plotdf['Data'] >= date_minus_str) & (plotdf['Data'] <= date_str)]
-	media_1as = format(plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()/30, ".2f")
+	media_1as = ceil(plotdf.loc[plotdf['Dose Aplicada'] == '1ªDose']['Quantidade'].sum()/30)
 	media_2as = plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30
 
 	vel = 1.0
@@ -120,7 +121,15 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	previsao = format(previsao, ".2f")
 
 	# apenas pq o krerley pediu por enquanto
-	previsao = format(pop_adultos/media_2as, ".2f")
-	media_2as = format(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30, ".2f")
+	previsao = ceil(pop_adultos/media_2as)
+	media_2as = ceil(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30)
 
-	return total, qnt_1as_doses, qnt_2as_doses, media_1as, media_2as, previsao
+	translate_dict = {'Janeiro':1, 'Fevereiro':2, 'Março':3, 'Abril':4, 'Maio':5, 'Junho':6, 'Julho':7, 'Agosto':8, 'Setembro':9, 'Outubro':10, 'Novembro':11, 'Dezembro':12}
+	DATA_DATE_STR = open(os.path.join(CURRENT_DIR, 'datasets', 'data_date_str.txt'), 'r').read()
+	DATA_DATE_STR = DATA_DATE_STR.split('/')
+	day = int(DATA_DATE_STR[0])
+	month = translate_dict[DATA_DATE_STR[1]]
+	year = int(DATA_DATE_STR[2])
+	previsao = datetime(day=day, month=month, year=year).date() + timedelta(days=previsao)
+
+	return total, qnt_1as_doses, qnt_2as_doses, media_1as, media_2as, previsao.strftime("%d/%m/%Y")

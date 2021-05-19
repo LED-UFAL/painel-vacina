@@ -284,7 +284,7 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
         ], className='two columns'),
         html.Div([
             html.H2('Fim da Vacinação'),
-            html.H4('{} dias'.format(previsao)),
+            html.H4('{}'.format(previsao)),
         ], className='two columns'),
     ], className="row")
 
