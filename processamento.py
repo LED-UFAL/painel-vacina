@@ -7,6 +7,9 @@ from tqdm import tqdm
 
 from tratamento import GeraDados
 
+
+CURRENT_DIR = os.path.dirname(__file__)
+
 OLD_FIELD_LIST = [
     'paciente_id',
     'paciente_idade',
@@ -83,6 +86,10 @@ def processa_demanda(df):
     """
     Função para gerar as tabelas
     """
+    population_file = os.path.join(CURRENT_DIR, 'datasets', 'datasus') + '/faixas_niveis_2020.csv'
+    df_pop = pd.read_csv(population_file,  {'CodEst': np.float64, 'CodMun': np.float64}, delimiter=';')
+
+
     if not os.path.exists(os.path.join('datasets', 'BRASIL')):
         os.mkdir(os.path.join('datasets', 'BRASIL'))
 
@@ -98,10 +105,14 @@ def processa_demanda(df):
     if not os.path.exists(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS')):
         os.mkdir(os.path.join('datasets', 'BRASIL', 'abandono-atraso-vacinal', 'TODOS'))
 
+    if not os.path.exists(os.path.join('datasets', 'BRASIL', 'cobertura')):
+        os.mkdir(os.path.join('datasets', 'BRASIL', 'cobertura'))
+
     data_brasil = GeraDados(df)
     data_brasil.gera_demanda().to_csv('datasets/BRASIL/demanda/TODOS.csv', sep=';', index=False)
     data_brasil.gerar_doses_por_dia().to_csv('datasets/BRASIL/doses_por_dia/TODOS.csv', sep=';', index=False)
     data_brasil.gera_serie_atraso().to_csv('datasets/BRASIL/abandono-atraso-vacinal/TODOS/serie-atraso.csv', sep=';')
+    data_brasil.gera_cobertura(df_pop, nivel='N').to_csv('datasets/BRASIL/cobertura/TODOS.csv', sep=';')
     for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
         data_brasil.gera_demanda(tipo_vacina=vacina).to_csv('datasets/BRASIL/demanda/TODOS_{}.csv'.format(vacina), sep=';', index=False)
         data_brasil.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/BRASIL/doses_por_dia/TODOS_{}.csv'.format(vacina), sep=';', index=False)    
@@ -123,6 +134,9 @@ def processa_demanda(df):
         if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', 'TODOS')):
             os.mkdir(os.path.join('datasets', uf, 'abandono-atraso-vacinal', 'TODOS'))
 
+        if not os.path.exists(os.path.join('datasets', uf, 'cobertura')):
+            os.mkdir(os.path.join('datasets', uf, 'cobertura'))
+
         df_estado = df.loc[df['estabelecimento_uf']==uf].reset_index(drop=True)
         data_estado = GeraDados(df_estado)
         data_estado.gera_demanda().to_csv('datasets/{}/demanda/TODOS.csv'.format(uf), sep=';', index=False)
@@ -131,6 +145,9 @@ def processa_demanda(df):
         for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
             data_estado.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/TODOS_{}.csv'.format(uf, vacina), sep=';', index=False)
             data_estado.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/{}/doses_por_dia/TODOS_{}.csv'.format(uf, vacina), sep=';', index=False)
+        # obtem o codigo do estado do primeiro registro
+        cod_estado = float(str(df_estado.iloc[0, :]['estabelecimento_municipio_codigo'])[:2])
+        data_estado.gera_cobertura(df_pop, nivel='E', codigo=cod_estado).to_csv('datasets/{}/cobertura/TODOS.csv'.format(uf), sep=';')
         data_estado = None
         for cidade in tqdm(df_estado["estabelecimento_municipio_nome"].unique()):
             if not os.path.exists(os.path.join('datasets', uf, 'abandono-atraso-vacinal', cidade)):
@@ -144,6 +161,8 @@ def processa_demanda(df):
             for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
                 data.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
                 data.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/{}/doses_por_dia/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
+            cod_mun = float(str(df_estado.iloc[0, :]['estabelecimento_municipio_codigo'])[:6])
+            data.gera_cobertura(df_pop, nivel='M', codigo=cod_mun).to_csv('datasets/{}/cobertura/{}.csv'.format(uf, cidade), sep=';')
         print(uf+' - OK')
 
 

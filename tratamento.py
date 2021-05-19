@@ -94,7 +94,8 @@ def generates_demand(df, max_window):
 
 class Tratamento():
     def __init__(self, df):
-        df = df[['vacina_dataAplicacao', 'vacina_descricao_dose', 'paciente_id', 'vacina_nome']]
+        # df = df[['vacina_dataAplicacao', 'vacina_descricao_dose', 'paciente_id', 'vacina_nome']]
+        df = df[['vacina_dataAplicacao', 'vacina_descricao_dose', 'paciente_id', 'vacina_nome', 'paciente_idade', 'paciente_enumSexoBiologico']]
         df = df.drop_duplicates(subset=['paciente_id', 'vacina_dataAplicacao', 'vacina_descricao_dose'], keep='first').reset_index(drop=True)
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
@@ -220,3 +221,28 @@ class GeraDados():
             delay_df = pd.DataFrame(columns=[tip+item for tip in ['neg-', 'nul-', 'pos-'] for item in DOSE_OFFSET])
 
         return delay_df
+
+    def gera_cobertura(self, dfPop, nivel, codigo=None):
+        """
+        Gera dados de cobertura vacinal por faixa etária e sexo
+        """
+        data = self.df_tratado
+        faixas = [i for i in range(0, 81, 5)] + [200]
+        labels = dfPop.columns[-17:]
+        data['faixa'] = pd.cut(data['paciente_idade'], bins=faixas, labels=labels, right=False)
+        dfPopNivel = dfPop.query('nivel=="E" and CodEst==@codigo') if nivel == 'E' else dfPop.query('nivel=="M" and CodMun==@codigo') if nivel == 'M' else dfPop.query('nivel=="N"')
+
+        dfPopNivel = dfPopNivel.iloc[:, -18:].set_index('Sexo').stack().to_frame().reset_index()
+
+        dfPopNivel.columns = ['Sexo', 'Faixa', 'Total']
+
+        dfVac = data.groupby(['paciente_enumSexoBiologico', 'faixa', 'vacina_descricao_dose']).size().reset_index()
+
+        dfVac.columns = ['Sexo', 'Faixa', 'Dose', 'Vacinados']
+
+        dfFinal = dfVac.merge(dfPopNivel)
+        dfFinal = dfFinal.set_index(['Sexo', 'Dose', 'Faixa'])
+
+        return dfFinal
+
+
