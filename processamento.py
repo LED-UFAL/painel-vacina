@@ -35,7 +35,7 @@ NEW_FIELD_LIST = [
 
 FIELD_TYPE_LIST = {
     'paciente_id': 'str',
-    'paciente_idade': 'object',
+    'paciente_idade': 'Int64',
     'paciente_enumsexobiologico': 'str',
     'paciente_racacor_valor': 'str',
     'estabelecimento_municipio_codigo': np.uint32,
