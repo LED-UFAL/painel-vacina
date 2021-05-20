@@ -161,7 +161,7 @@ def processa_demanda(df):
             for vacina in ('coronavac', 'astrazeneca', 'pfizer'):
                 data.gera_demanda(tipo_vacina=vacina).to_csv('datasets/{}/demanda/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
                 data.gerar_doses_por_dia(tipo_vacina=vacina).to_csv('datasets/{}/doses_por_dia/{}_{}.csv'.format(uf, cidade, vacina), sep=';', index=False)
-            cod_mun = float(str(df_estado.iloc[0, :]['estabelecimento_municipio_codigo'])[:6])
+            cod_mun = float(str(df_municipio.iloc[0, :]['estabelecimento_municipio_codigo'])[:6])
             data.gera_cobertura(df_pop, nivel='M', codigo=cod_mun).to_csv('datasets/{}/cobertura/{}.csv'.format(uf, cidade), sep=';')
         print(uf+' - OK')
 
