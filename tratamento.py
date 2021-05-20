@@ -184,7 +184,7 @@ class GeraDados():
             df_coronavac = df.loc[df['vacina_nome']=='Covid-19-Coronavac-Sinovac/Butantan'].reset_index(drop=True)
             df_coronavac['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=28))
             df_pfizer = df.loc[df['vacina_nome']=='Vacina covid-19 - BNT162b2 - BioNTech/Fosun Pharma/Pfizer'].reset_index(drop=True)
-            df_pfizer['dataSegundaDose'] = df_coronavac['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=25))
+            df_pfizer['dataSegundaDose'] = df_pfizer['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=25))
             df = pd.concat([df_coronavac, df_astrazeneca, df_pfizer]).reset_index(drop=True)
             df = df.groupby(['dataSegundaDose']).size()
             if df.shape[0]!=0:
