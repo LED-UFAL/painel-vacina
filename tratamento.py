@@ -99,6 +99,7 @@ class Tratamento():
         df = df.drop_duplicates(subset=['paciente_id', 'vacina_dataAplicacao', 'vacina_descricao_dose'], keep='first').reset_index(drop=True)
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
         df['vacina_dataAplicacao'] = df['vacina_dataAplicacao'].apply(lambda x: datetime.strptime(x[:10], '%Y-%m-%d').date())
+        df = df.loc[df['vacina_nome']!='Pendente Identificação'].reset_index(drop=True)
         df = df.loc[(df['vacina_dataAplicacao']>=pd.Timestamp(2020, 12, 31)) & (df['vacina_dataAplicacao']<=pd.Timestamp('today'))].reset_index(drop=True)
         df = df.loc[df['vacina_descricao_dose'].isin(['1ªDose', '2ªDose'])].reset_index(drop=True)
         self.df = df
