@@ -1,6 +1,8 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash_html_components.P import P
+from dash_html_components.Span import Span
 import plotly.express as px
 import pandas as pd
 from tqdm import tqdm
@@ -43,8 +45,12 @@ all_options = {
 app.layout = html.Div(children=[
     html.H1(children='Painel Vacinação COVID-19'),
 
-    html.Div(children='Iniciativa do Laboratório de Estatística e Ciência de Dados da UFAL.',
-        style=dict(fontSize='25px')),
+    html.Div(children=[
+        html.Span('Iniciativa do '),
+        html.A('Laboratório de Estatística e Ciência de Dados da UFAL', href='http://led-ufal.xyz/'),     
+        html.Span(' e dentro do projeto '),
+        html.A('ModCovid19', href='http://www.cemeai.icmc.usp.br/ModCovid19/'),
+    ], style=dict(fontSize='25px')),
     html.Div(children="""
         Os gráficos abaixo são interativos. Você pode clicar nas legendas para selecionar as opções, dar zoom
         e selecionar partes dos gráficos, fazer download, fazer comparações interativas ao longo dos eixos, etc.
@@ -123,7 +129,7 @@ app.layout = html.Div(children=[
     ], className="row"),
         dcc.Markdown(
         """
-        ### Intervalos para a segunda dose
+        ### Intervalos para a segunda dose recomendados pelo fabricante
 
         |  Tempo | Astrazeneca | CoronaVac |  Pfizer |
         |:------:|:-----------:|:---------:|:-------:|
@@ -134,6 +140,7 @@ app.layout = html.Div(children=[
 
         Foram tratadas as seguintes anomalias para a realização das análises:
 
+        * Foram removidos os registros de vacinas com nome de "Pendente Identificação";
         * Foram removidas as pessoas cuja 2ª dose foi registrada antes da 1ª dose;
         * Foram removidas as pessoas cuja 1ª dose foi aplicada antes de 2021;
         * Foram removidas as doses informadas mais de uma vez para a mesma pessoa, com mesma data de aplicação;
@@ -258,7 +265,7 @@ def set_display_children(estado_selecionado, municipio_selecionada):
 )
 def set_display_children(estado_selecionado, municipio_selecionada):
     return [
-        html.H3('Abandono da vacinação'),
+        html.H3('Evolução do atraso de vacinação'),
         html.H5('Número total de pessoas que iniciaram o esquema vacinal (tomaram a '
                 'primeira dose) e não concluíram (já deveriam ter tomado a segunda dose).'),
         dcc.Graph(
