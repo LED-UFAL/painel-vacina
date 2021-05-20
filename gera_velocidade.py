@@ -13,7 +13,7 @@ data = {
 }
 
 for file0 in os.listdir(datasets_folder):
-	if not file0.endswith('.txt') and not file0.endswith('velocidades_doses.csv') and not file0.endswith('faixas_niveis_2020_ex.csv') and not file0.endswith('faixas_niveis_2020.zip') and not file0.endswith('cod_cidades.csv'):
+	if not file0.endswith('.txt') and not file0.endswith('velocidades_doses.csv') and not file0.endswith('faixas_niveis_2020_ex.csv') and not file0.endswith('faixas_niveis_2020.zip') and not file0.endswith('cod_cidades.csv') and not file0.endswith('datasus'):
 		for file1 in os.listdir(os.path.join(datasets_folder, file0, 'doses_por_dia')):
 			if not file1.endswith('_astrazeneca.csv') and not file1.endswith('_coronavac.csv') and not file1.endswith('_pfizer.csv') and not file1.endswith('TODOS.csv'):
 				filename = os.path.join(datasets_folder, file0, 'doses_por_dia', file1)
