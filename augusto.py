@@ -231,7 +231,7 @@ def indicadores(uf='TODOS', municipio='TODOS', vacina='todas', grafico='DOSES PO
 	previsao = format(previsao, ".2f")
 
 	# apenas pq o krerley pediu por enquanto
-	previsao = ceil((pop_adultos-qnt_2as_doses)/media_2as)
+	previsao = ceil((0.8*pop_adultos-qnt_2as_doses)/media_2as)
 	media_2as = ceil(plotdf.loc[plotdf['Dose Aplicada'] == '2ªDose']['Quantidade'].sum()/30)
 
 	translate_dict = {'Janeiro':1, 'Fevereiro':2, 'Março':3, 'Abril':4, 'Maio':5, 'Junho':6, 'Julho':7, 'Agosto':8, 'Setembro':9, 'Outubro':10, 'Novembro':11, 'Dezembro':12}
