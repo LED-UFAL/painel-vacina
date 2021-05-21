@@ -145,7 +145,8 @@ app.layout = html.Div(children=[
         * Foram removidas as pessoas cuja 1ª dose foi aplicada antes de 2021;
         * Foram removidas as doses informadas mais de uma vez para a mesma pessoa, com mesma data de aplicação;
         * Foram transformadas em 1ª dose as aplicações de 2ª dose correspondentes às pessoas que têm apenas uma dose informada;
-        * Foram removidas as pessoas que tomaram doses de vacinas diferentes.
+        * Foram removidas as pessoas que tomaram doses de vacinas diferentes;
+        * Foi utilizado 80% das pessoas com mais de 20 anos de acordo com estimativa de 2020 do Datasus para o cálculo do Fim da Vacinação.
 
         """
     ),
@@ -336,7 +337,7 @@ def indicadores(estado_selecionado, municipio_selecionada, vacina_selecionada):
             html.P('para as segundas doses')
         ], className='two columns'),
         html.Div([
-            html.H2('Fim da Vacinação'),
+            html.H2('Fim da Vacinação*'),
             html.H4('{}'.format(previsao)),
         ], className='two columns'),
     ], className="row")
