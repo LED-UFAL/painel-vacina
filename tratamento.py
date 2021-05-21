@@ -85,9 +85,9 @@ def generates_demand(df, max_window):
     df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=max_window))
     df = df.groupby(['dataSegundaDose']).size()
     if df.shape[0]!=0:
-        idx = pd.date_range(df.index.min(), df.index.max())
+        idx = pd.date_range(df.index.min(), datetime.today().date()+timedelta(days=84))
         df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
-        df = df.loc[df['index']>pd.Timestamp('today')].reset_index(drop=True)
+        df = df.loc[df['index']>=pd.Timestamp('today')].reset_index(drop=True)
     else:
         df = pd.DataFrame(columns=['index', 'count'])
     return df
@@ -188,7 +188,7 @@ class GeraDados():
             df = pd.concat([df_coronavac, df_astrazeneca, df_pfizer]).reset_index(drop=True)
             df = df.groupby(['dataSegundaDose']).size()
             if df.shape[0]!=0:
-                idx = pd.date_range(df.index.min(), df.index.max())
+                idx = pd.date_range(df.index.min(), datetime.today().date()+timedelta(days=84))
                 df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
                 df = df.loc[df['index']>=pd.Timestamp('today')].reset_index(drop=True)
             else:
