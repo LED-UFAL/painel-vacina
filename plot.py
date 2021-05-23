@@ -23,6 +23,8 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ])
+# titulo da pagina
+app.title = "Vacinômetro"
 server = app.server
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -80,6 +82,21 @@ app.layout = html.Div(children=[
 
     html.Div(id='indicadores'),
 
+    html.H1('Cobertura Vacinal',
+            style=dict(display='flex', justifyContent='center', marginTop='50px', marginBottom='50px')),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-cobertura'),
+        ], className="six columns"),
+
+    html.Div([
+        html.Div([
+            html.Div(id='mostrar-cobertura-total'),
+        ], className="six columns"),
+
+    ], className="row"),]),
+
     html.Div([
         html.Div([
             html.H3('Doses aplicadas por dia'),
@@ -136,7 +153,7 @@ app.layout = html.Div(children=[
         | Mínimo |   56 dias   |  14 dias  | 21 dias |
         | Máximo |   84 dias   |  28 dias  | 25 dias |
 
-        ### Observações
+        ### * Observações
 
         Foram tratadas as seguintes anomalias para a realização das análises:
 
@@ -150,21 +167,6 @@ app.layout = html.Div(children=[
 
         """
     ),
-
-    html.H1('Cobertura Vacinal',
-            style=dict(display='flex', justifyContent='center', marginTop='50px', marginBottom='50px')),
-
-    html.Div([
-        html.Div([
-            html.Div(id='mostrar-cobertura'),
-        ], className="six columns"),
-
-    html.Div([
-        html.Div([
-            html.Div(id='mostrar-cobertura-total'),
-        ], className="six columns"),
-
-    ], className="row"),])
 
 ])
 
