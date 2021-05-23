@@ -68,8 +68,7 @@ def carrega_base(file_path, chunk_size=int(1e6)):
     for chunk_df in dataframes:
         dataframe = pd.concat([dataframe, chunk_df], ignore_index=True)
 
-
-    dataframe = dataframe.rename(columns=dict(zip(NEW_FIELD_LIST, OLD_FIELD_LIST))).dropna()
+    dataframe = dataframe.rename(columns=dict(zip(NEW_FIELD_LIST, OLD_FIELD_LIST)))
 
     ## Salva o timestamp dos dados baseado na hora da última vacina aplicada segundo
     ## a data de importacao rnds.
