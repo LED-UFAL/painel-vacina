@@ -14,23 +14,28 @@
 
     <header class="d-flex justify-content-center py-3">
       <ul class="nav nav-pills">
-        <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Painel da Vacinação</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">Mod COVID 19</a></li>
-        <li class="nav-item"><a href="#" class="nav-link">Sistema de Motiramento Clínico</a></li>
+        <li class="nav-item"><a href="http://vacinometro.icmc.usp.br/painel" class="nav-link active" aria-current="page">Painel da Vacinação</a></li>
+        <li class="nav-item"><a href="http://www.cemeai.icmc.usp.br/ModCovid19/" class="nav-link">Mod COVID 19</a></li>
+        <li class="nav-item"><a href="https://im.ufal.br/laboratorio/led/smc/" class="nav-link">Sistema de Motiramento Clínico</a></li>
       </ul>
     </header>
 
     <div class="row">
       <div class="px-4 py-5 my-5 text-center">
-        <img width="72" src="assets\images\vacina.png" alt="">
+        <img width="72" src="assets\images\vacina.png" alt="icone-vacina">
         <h1 class="display-5 fw-bold">Painel da Vacinação - COVID 19</h1>
         <div class="col-lg-6 mx-auto">
-          <p class="lead mb-4">Aqui seria legal explicar de forma resumida qual a origem dos dados, como são obtidos,
-            tratados e exibidos na plataforma - seria legal que houvesse uma seção onde fosse explicado todo o processo de
-            obtenção e normalização dos dados.</p>
+          <p class="lead mb-4">
+            O painel da vacinação foi criado com o objetivo de informar a
+            comunidade em geral sobre o andamento da vacinação no país, estados
+            e municípios. Os dados utilizados são oriundos do 
+            <a href="https://opendatasus.saude.gov.br/dataset/covid-19-vacinacao" target="_blank">Ministério da Saúde</a>.
+          </p>
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Ir para o Painel</button>
-            <button type="button" class="btn btn-outline-secondary btn-lg px-4">Como os dados são obtidos?</button>
+            <a href="http://vacinometro.icmc.usp.br/painel">
+              <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Ir para o Painel</button>
+            </a>
+            <!--<button type="button" class="btn btn-outline-secondary btn-lg px-4">Como os dados são obtidos?</button>-->
           </div>
         </div>
       </div>
@@ -41,8 +46,9 @@
         <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#bootstrap"></use></svg>
         <div>
           <h4 class="fw-bold mb-0">Relatórios</h4>
-          <p>Breve explicação sobre a seção de relatórios.</p>
-          <a href="#" class="icon-link">
+          <p>Problemas encontrados na base de dados do Ministério da
+            Saúde.</p>
+          <a href="http://vacinometro.icmc.usp.br/relatorio/index.html" class="icon-link">
             Acessar relatórios
           </a>
         </div>
@@ -51,8 +57,8 @@
         <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#cpu-fill"></use></svg>
         <div>
           <h4 class="fw-bold mb-0">Atrasos</h4>
-          <p>Breve explicação sobre a seção de atrasos.</p>
-          <a href="#" class="icon-link">
+          <p>Tabela de atrasos na aplicação de segundas doses por município.</p>
+          <a href="http://vacinometro.icmc.usp.br/atrasados/index.html" class="icon-link">
             Acessar atrasos
           </a>
         </div>
@@ -61,8 +67,9 @@
         <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#calendar3"></use></svg>
         <div>
           <h4 class="fw-bold mb-0">Mapa de distâncias</h4>
-          <p>Breve explicação sobre a seção de mapa de distâncias.</p>
-          <a href="#" class="icon-link">
+          <p>Distâncias médias percorridas por pessoas vacinadas fora do seu
+            domicílio.</p>
+          <a href="https://pessoal.dainf.ct.utfpr.edu.br/lcjunior/mapa-distancia-vacinacao.html" class="icon-link">
             Acessar mapa de distâncias
           </a>
         </div>
@@ -71,8 +78,8 @@
         <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#home"></use></svg>
         <div>
           <h4 class="fw-bold mb-0">Mapa de fluxo</h4>
-          <p>Breve explicação sobre a seção de mapa de fluxo</p>
-          <a href="#" class="icon-link">
+          <p>Mapa do fluxo de pessoas vacinadas fora do seu domicílio.</p>
+          <a href="https://pessoal.dainf.ct.utfpr.edu.br/lcjunior/mapa-fluxo-vacinacao.html" class="icon-link">
             Acessar mapa de fluxo
           </a>
         </div>
@@ -97,10 +104,10 @@
 
     <footer class="row border-top">
       <div class="col py-3">
-        <p>LED - Laboratório de Estatística e Ciência de Dados</p>
+        <a href="https://im.ufal.br/laboratorio/led/">LED - Laboratório de Estatística e Ciência de Dados</a>
       </div>
       <div class="col py-3 text-end">
-        <img src="assets/images/Octocat.png" width="32" alt="">
+        <img src="assets/images/Octocat.png" width="32" alt="octocat">
         <a href="https://github.com/LED-UFAL/painel-vacina">Contribua com o Projeto</a>
       </div> 
     </footer>
