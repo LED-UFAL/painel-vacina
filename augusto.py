@@ -28,9 +28,9 @@ def plotar_doses_por_dia(uf='TODOS', municipio='TODOS', vacina='todas', grafico=
 		plotdf = pd.read_csv(os.path.join(folder, municipio)+'.csv', sep=';')
 		fig = px.bar(plotdf, x="Data", y='Quantidade', color="Dose Aplicada", barmode="group",
 		)
-	#fig.update_layout(
-	#    xaxis_tickformat = '%d/%m/%y'
-	#)
+	fig.update_layout(
+	    xaxis=dict(title="Data", tickformat="%d/%m/%Y"), yaxis=dict(title="Quantidade de doses", tickformat=".1")
+	)
 	return fig
 
 def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
@@ -39,7 +39,7 @@ def plotar_demanda_por_dia(uf='TODOS', municipio='TODOS', grafico='DEMANDA'):
 	fig = px.bar(plotdf, x="index", y='count')
 
 	fig.update_layout(
-        xaxis=dict(title="Data"), yaxis=dict(title="Quantidade")
+        xaxis=dict(title="Data", tickformat="%d/%m/%Y"), yaxis=dict(title="Quantidade", tickformat=".1")
     )
 	return fig
 
@@ -56,7 +56,7 @@ def plotar_demanda_por_vacina(uf='TODOS', municipio='TODOS', grafico='DEMANDA PO
 	fig = go.Figure(data=data)
 
 	fig.update_layout(
-        xaxis=dict(title="Data"), yaxis=dict(title="Quantidade")
+        xaxis=dict(title="Data", tickformat="%d/%m/%Y"), yaxis=dict(title="Quantidade", tickformat='.1')
     )
 	return fig
 
@@ -69,7 +69,7 @@ def plot_delay(uf, municipio, prefix):
     delay_df.columns = [c.replace(prefix + " - ", "") for c in delay_df.columns]
     fig = px.bar(delay_df, barmode="group")
     fig.update_layout(
-        xaxis=dict(title="Data"), yaxis=dict(title="Quantidade"), legend=dict(title="Tipo Vacina")
+        xaxis=dict(title="Data", tickformat="%d/%m/%Y"), yaxis=dict(title="Quantidade", tickformat='.1'), legend=dict(title="Tipo Vacina")
     )
     return fig
 
