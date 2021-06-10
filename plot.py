@@ -151,7 +151,7 @@ app.layout = html.Div(children=[
         |  Tempo | Astrazeneca | CoronaVac |  Pfizer |
         |:------:|:-----------:|:---------:|:-------:|
         | Mínimo |   56 dias   |  14 dias  | 21 dias |
-        | Máximo |   84 dias   |  28 dias  | 25 dias |
+        | Máximo |   84 dias   |  28 dias  | 84 dias |
 
         ### * Observações
 
