@@ -179,7 +179,7 @@ def plotar_cobertura_total(uf='TODOS', municipio='TODOS'):
 
 	duas_doses = dfTotal.loc['2ªDose', 'Vacinados'] * sample_multiply
 	uma_dose = (dfTotal.loc['1ªDose', 'Vacinados'] * sample_multiply) - duas_doses
-	nao_vacinados = dfTotal.loc['1ªDose', 'Total'] - uma_dose
+	nao_vacinados = dfTotal.loc['1ªDose', 'Total'] - uma_dose - duas_doses
 	fig = px.pie(values=[uma_dose, duas_doses, nao_vacinados] , names=['Uma dose', 'Duas doses', 'Não vacinados'],
 				 title='Cobertura total')
 	return fig
