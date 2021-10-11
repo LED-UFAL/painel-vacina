@@ -104,11 +104,11 @@ if __name__ == '__main__':
         'Total de atrasados (Astrazeneca)': df_estado['Total de atrasados (Astrazeneca)'].sum(),
         'Total de pacientes com primeiras doses até 28 dias atrás (CoronaVac)': df_estado['Total de pacientes com primeiras doses até 28 dias atrás (CoronaVac)'].sum(),
         'Total de atrasados (CoronaVac)': df_estado['Total de atrasados (CoronaVac)'].sum(),
-        'Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)': df['Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)'].sum(),
-    'Total de atrasados (Pfizer)': df['Total de atrasados (Pfizer)'].sum(),
+        'Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)': df_estado['Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)'].sum(),
+    'Total de atrasados (Pfizer)': df_estado['Total de atrasados (Pfizer)'].sum(),
         'Percentual de atrasados (Astrazeneca)': '%.2f' % (df_estado['Total de atrasados (Astrazeneca)'].sum()*100/df_estado['Total de pacientes com primeiras doses até 84 dias atrás (Astrazeneca)'].sum()) + '%',
         'Percentual de atrasados (CoronaVac)': '%.2f' % (df_estado['Total de atrasados (CoronaVac)'].sum()*100/df_estado['Total de pacientes com primeiras doses até 28 dias atrás (CoronaVac)'].sum()) + '%',
-        'Percentual de atrasados (Pfizer)': '%.2f' % (df['Total de atrasados (Pfizer)'].sum()*100/df['Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)'].sum()) + '%',
+        'Percentual de atrasados (Pfizer)': '%.2f' % (df_estado['Total de atrasados (Pfizer)'].sum()*100/df_estado['Total de pacientes com primeiras doses até 84 dias atrás (Pfizer)'].sum()) + '%',
     })
     df = pd.concat([pd.DataFrame(l1), pd.DataFrame(l2).sort_values(by=['Estado', 'Município']), df], ignore_index=True)
 
