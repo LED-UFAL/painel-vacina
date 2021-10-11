@@ -19,6 +19,8 @@ DOSE_OFFSET = {
     "Pfizer": (21, 84)
 }
 
+TODAY = datetime.today().date()
+
 
 def empty_df(prefix, date_interval):
     """"
@@ -68,8 +70,8 @@ def delay_series(data, date_interval):
             else:
                 nul_delay.at[d["vacina_dose_2"], "Dentro do prazo - " + d["vacina_nome"]] += 1
         else:
-            if datetime.today().date() > a_max:
-                for day in pd.date_range(a_max, datetime.today().date(), freq='d').date:
+            if TODAY > a_max:
+                for day in pd.date_range(a_max, TODAY, freq='d').date:
                     abandon.at[day, "Abandono - " + d["vacina_nome"]] += 1
 
     return pd.concat([neg_delay, nul_delay, pos_delay, abandon], axis=1)
@@ -85,7 +87,7 @@ def generates_demand(df, max_window):
     df['dataSegundaDose'] = df['vacina_dataAplicacao'].apply(lambda x: x+timedelta(days=max_window))
     df = df.groupby(['dataSegundaDose']).size()
     if df.shape[0]!=0:
-        idx = pd.date_range(df.index.min(), datetime.today().date()+timedelta(days=84))
+        idx = pd.date_range(df.index.min(), TODAY+timedelta(days=84))
         df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
         df = df[df['index']>=pd.Timestamp('today')].reset_index(drop=True)
     else:
@@ -95,6 +97,7 @@ def generates_demand(df, max_window):
 class Tratamento():
     def __init__(self, df):
         # df = df[['vacina_dataAplicacao', 'vacina_descricao_dose', 'paciente_id', 'vacina_nome']]
+        df = df[df['vacina_nome']!='Vacina covid-19 - Ad26.COV2.S - Janssen-Cilag']
         df = df[['vacina_dataAplicacao', 'vacina_descricao_dose', 'paciente_id', 'vacina_nome', 'paciente_idade', 'paciente_enumSexoBiologico']]
         df = df.drop_duplicates(subset=['paciente_id', 'vacina_dataAplicacao', 'vacina_descricao_dose'], keep='first').reset_index(drop=True)
         df['vacina_descricao_dose'] = df['vacina_descricao_dose'].apply(lambda x : x.replace(u'\xa0', u''))
@@ -188,7 +191,7 @@ class GeraDados():
             df = pd.concat([df_coronavac, df_astrazeneca, df_pfizer]).reset_index(drop=True)
             df = df.groupby(['dataSegundaDose']).size()
             if df.shape[0]!=0:
-                idx = pd.date_range(df.index.min(), datetime.today().date()+timedelta(days=84))
+                idx = pd.date_range(df.index.min(), TODAY+timedelta(days=84))
                 df = df.reindex(idx, fill_value=0).cumsum().to_frame(name='count').reset_index(drop=False)
                 df = df[df['index']>=pd.Timestamp('today')].reset_index(drop=True)
             else:
@@ -215,7 +218,7 @@ class GeraDados():
     def gera_serie_atraso(self):
         data = self.process_source_data
         if data.shape[0]!=0:
-            date_interval = pd.date_range(data.vacina_dose_1.min(), datetime.today().date(), freq='d').date
+            date_interval = pd.date_range(data.vacina_dose_1.min(), TODAY, freq='d').date
             # Calculando quantidade de pessoas atrasadas (atraso <, > e = 0) por dia:
             delay_df = delay_series(date_interval=date_interval, data=data)
         else:
