@@ -38,6 +38,7 @@ Na pasta do painel-vacina:
 Acesse [http://127.0.0.1:8050/](http://127.0.0.1:8050/).
 
 # Colaboradores
+José Augusto - IC/UFAL
 
 Adriano Barbosa - FACET/UFGD
 
